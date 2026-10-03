@@ -238,7 +238,7 @@ Git & GitHub
 
 The specific tools will be added here as they are introduced and used.
 
-Repository Philosophy
+# Repository Philosophy
 
 This is not intended to be a collection of copied course notes.
 
