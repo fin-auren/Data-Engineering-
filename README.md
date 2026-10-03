@@ -1717,3 +1717,618 @@ What the organization needs
  For the financial projects in this repository, I therefore want to make **stakeholder analysis and requirements gathering part of the project itself**, rather than treating them as documentation added after the implementation.
 
 
+ ## Why Requirements Come Before Technology
+
+ The previous lecture established that a data engineer needs to understand both upstream and downstream stakeholders.
+
+ This lecture takes the next step:
+
+ > **How do we translate what stakeholders need into something we can actually build?**
+
+ Before writing code, selecting a database, or deploying cloud infrastructure, a data engineer needs to understand the requirements of the system.
+
+ The overall process can be viewed as:
+
+```
+Business Goals
+      ↓
+Stakeholder Needs
+      ↓
+System Requirements
+      ↓
+Architecture
+      ↓
+Technology
+      ↓
+Implementation
+```
+
+ This reinforces one of the principles from the earlier lectures:
+
+ > **Don't start with the technology. Start with the problem and the requirements.**
+
+---
+
+ # Three Levels of Requirements
+
+ A useful distinction introduced in this lecture is that requirements exist at different levels.
+
+```
+Business Requirements
+        ↓
+Stakeholder Requirements
+        ↓
+System Requirements
+```
+
+ Each level answers a different question.
+
+---
+
+ ## 1\. Business Requirements
+
+ Business requirements describe the **high-level goals of the organization**.
+
+ Examples might include:
+
+ - Increase revenue
+- Reduce operating costs
+- Increase customer retention
+- Improve decision-making
+- Reduce operational risk
+- Expand into a new market
+
+ These requirements are generally expressed in business language rather than technical language.
+
+ For example:
+
+ > "Improve the accuracy and speed of financial reporting."
+
+ This is a business objective.
+
+ It does not yet tell the data engineer what system to build.
+
+---
+
+ ## 2\. Stakeholder Requirements
+
+ Stakeholder requirements describe what a particular person or team needs to accomplish their work.
+
+ For example, a financial analyst might need:
+
+ > "Access reliable daily portfolio performance data so that I can generate performance reports."
+
+ A risk analyst might need:
+
+ > "Receive updated exposure data frequently enough to monitor changes in portfolio risk."
+
+ A data scientist might need:
+
+ > "Access historical transaction data in a format suitable for developing fraud-detection models."
+
+ These are more specific than business requirements, but they still do not fully define the technical system.
+
+---
+
+ ## 3\. System Requirements
+
+ System requirements translate stakeholder needs into things the actual system must be capable of doing.
+
+ For example:
+
+```
+Stakeholder Need
+       ↓
+"Analyst needs updated portfolio data"
+       ↓
+System Requirement
+       ↓
+"System must update portfolio data
+ every hour"
+```
+
+ System requirements therefore form the bridge between **business needs and engineering implementation**.
+
+---
+
+ # Functional vs Non-Functional Requirements
+
+ System requirements can be divided into two broad categories:
+
+```
+             SYSTEM REQUIREMENTS
+                     │
+            ┌────────┴────────┐
+            ↓                 ↓
+       Functional       Non-Functional
+            │                 │
+           WHAT              HOW / QUALITY
+```
+
+---
+
+ ## Functional Requirements
+
+ Functional requirements describe **what the system needs to do**.
+
+ They represent the capabilities or behaviours of the system.
+
+ Examples include:
+
+ - Ingest financial transaction data
+- Update a database every hour
+- Calculate daily portfolio metrics
+- Detect anomalies in incoming data
+- Send an alert when a data-quality check fails
+- Provide historical data for analysis
+- Make transformed data available to downstream users
+
+ A functional requirement might look like:
+
+ > **The system must ingest new transaction records every 15 minutes.**
+
+ This describes what the system must accomplish.
+
+---
+
+ # Non-Functional Requirements
+
+ Non-functional requirements describe **how the system should perform or what constraints it must satisfy**.
+
+ These can include:
+
+ - Performance
+- Reliability
+- Scalability
+- Security
+- Availability
+- Cost
+- Latency
+- Maintainability
+- Compliance
+- Data retention
+
+ For example:
+
+ > **The transaction pipeline should make newly received data available to downstream users within five minutes.**
+
+ Or:
+
+ > **The system must restrict access to sensitive financial data to authorized users.**
+
+ The distinction can be summarized as:
+
+```
+Functional
+"What must the system do?"
+
+          vs.
+
+Non-Functional
+"How well must it do it,
+and under what constraints?"
+```
+
+---
+
+ # Finance Example — Portfolio Analytics Platform
+
+ Consider a hypothetical financial organization that wants to improve portfolio analytics.
+
+ The initial business request might be:
+
+ > "We need better portfolio reporting."
+
+ That is not enough information to start building a pipeline.
+
+ We need to progressively translate it.
+
+ ### Business Requirement
+
+ > Improve the timeliness and reliability of portfolio reporting.
+
+ ### Stakeholder Requirement
+
+ A portfolio analyst needs:
+
+ > Reliable portfolio positions and market data to calculate performance metrics.
+
+ ### Functional Requirements
+
+ The system must:
+
+ - Ingest portfolio positions
+- Ingest relevant market prices
+- Associate securities with portfolios
+- Calculate required metrics
+- Store historical results
+- Make the resulting data available for analytics
+
+ ### Non-Functional Requirements
+
+ The system must consider:
+
+ - Data freshness
+- Query performance
+- Reliability
+- Security
+- Scalability
+- Data retention
+- Operational cost
+- Regulatory requirements
+
+ The result is a much more concrete system definition.
+
+---
+
+ # Requirements Are More Than Features
+
+ One important lesson from this lecture is that requirements can exist at many levels of detail.
+
+ They can describe:
+
+```
+Business Goals
+      ↓
+User Needs
+      ↓
+Data Products
+      ↓
+System Features
+      ↓
+Pipeline Behaviour
+      ↓
+Infrastructure
+      ↓
+Compute / Memory / Storage
+```
+
+ For example, a requirement could eventually influence something as technical as:
+
+ - Memory capacity
+- Storage capacity
+- Compute resources
+- Processing frequency
+- Database configuration
+- Pipeline orchestration
+- Network requirements
+
+ This is why good requirements gathering is foundational to architecture and implementation.
+
+---
+
+ # Requirements Gathering Is a Conversation
+
+ Stakeholders usually do not approach a data engineer with a perfectly written technical specification.
+
+ Instead, they may say things like:
+
+ > "I need a dashboard that is always up to date."
+
+ or:
+
+ > "We need better risk data."
+
+ or:
+
+ > "Can you give me all the historical transactions?"
+
+ The data engineer's responsibility is to investigate what these statements actually mean.
+
+ This requires asking questions.
+
+ For example:
+
+ ### "Always up to date"
+
+ Could mean:
+
+ - Every few seconds
+- Every minute
+- Every hour
+- Once per day
+
+ ### "Historical transactions"
+
+ Could mean:
+
+ - Last month
+- Last year
+- Five years
+- All available history
+
+ ### "Better risk data"
+
+ Could mean:
+
+ - More frequent updates
+- More accurate calculations
+- Additional fields
+- Better data quality
+- Better historical coverage
+- Faster queries
+
+ The initial stakeholder statement is therefore only the **starting point**.
+
+---
+
+ # Requirements Gathering Questions
+
+ For future projects, I want to use a structured set of questions.
+
+ ## Business
+
+ - What business problem are we solving?
+- Why is this problem important?
+- What business outcome are we trying to improve?
+- How will success be measured?
+
+ ## Stakeholder
+
+ - Who will use the data?
+- What are they trying to accomplish?
+- What decisions depend on the data?
+- What does "useful" mean to them?
+
+ ## Data
+
+ - What data is required?
+- Where does it come from?
+- How frequently is it generated?
+- How much historical data is needed?
+- What quality is expected?
+
+ ## Freshness
+
+ - How quickly must new data become available?
+- Is batch processing sufficient?
+- Is streaming required?
+- What latency is acceptable?
+
+ ## Performance
+
+ - How many users will consume the data?
+- What queries will they run?
+- How quickly should those queries respond?
+- Are precomputed aggregations useful?
+
+ ## Reliability
+
+ - What happens when a source fails?
+- What happens when data is missing?
+- How should duplicate records be handled?
+- How should late-arriving data be handled?
+
+ ## Security
+
+ - Who should have access?
+- Does the data contain sensitive information?
+- What access controls are required?
+
+ ## Compliance
+
+ - Are there regulatory requirements?
+- How long should data be retained?
+- Does the data need to be auditable?
+- Are there restrictions on where the data can be stored?
+
+ ## Cost
+
+ - What infrastructure budget is available?
+- What level of performance justifies the cost?
+- What resources are likely to scale with data volume?
+
+---
+
+ # Finance Perspective: Requirements Can Change the Architecture
+
+ Financial use cases make the connection between requirements and architecture particularly visible.
+
+ Consider two hypothetical requirements.
+
+ ### Requirement A
+
+ > "Generate an end-of-day portfolio report every morning."
+
+ This might be well suited to a batch-oriented architecture.
+
+```
+Daily Data
+    ↓
+Batch Processing
+    ↓
+Portfolio Calculations
+    ↓
+Report
+```
+
+ ### Requirement B
+
+ > "Provide continuously updated portfolio exposure for monitoring."
+
+ This may require a very different architecture.
+
+```
+Continuous Events
+       ↓
+Streaming / Event Processing
+       ↓
+Real-Time Data Store
+       ↓
+Risk Monitoring
+```
+
+ The key point is not that one architecture is universally better.
+
+ The architecture should be driven by the **requirements**.
+
+---
+
+ # Requirement Trade-Offs
+
+ Requirements can also conflict with each other.
+
+ For example:
+
+```
+Lower Latency
+      ↕
+Higher Cost
+
+Higher Reliability
+      ↕
+Greater Complexity
+
+More Historical Data
+      ↕
+Higher Storage Cost
+
+Higher Query Performance
+      ↕
+Potentially More Compute
+```
+
+ This means that data engineering is also a discipline of making **engineering trade-offs**.
+
+ A stakeholder may want:
+
+ - Real-time data
+- Perfect reliability
+- Unlimited historical storage
+- Extremely fast queries
+- Maximum security
+- Minimum cost
+
+ In practice, the engineer needs to understand which requirements are essential and which can be relaxed.
+
+---
+
+ # Requirements Traceability
+
+ For larger projects, I want to maintain a clear connection between the original business goal and the implementation.
+
+ For example:
+
+```
+Business Goal
+"Improve portfolio reporting"
+        ↓
+Stakeholder Need
+"Analysts need reliable daily positions"
+        ↓
+Functional Requirement
+"Ingest and validate daily positions"
+        ↓
+Non-Functional Requirement
+"Data available by 07:00 UTC"
+        ↓
+Architecture
+"Scheduled batch pipeline"
+        ↓
+Implementation
+"Ingestion → Validation → Transformation → Storage"
+```
+
+ This provides a useful form of **requirements traceability**.
+
+ If a technical decision cannot be connected to a requirement, it is worth asking why that decision exists.
+
+---
+
+ # Requirements Template for Future Projects
+
+ For the finance projects in this repository, I plan to use a template similar to this:
+
+ | Category | Question |
+| --- | --- |
+| Business Goal | What problem are we solving? |
+| Stakeholders | Who needs the data? |
+| Use Case | What will they do with it? |
+| Data Sources | Where does the data come from? |
+| Functional Requirements | What must the system do? |
+| Freshness | How current must the data be? |
+| Performance | How quickly must it respond? |
+| Reliability | What level of availability is required? |
+| Security | Who can access the data? |
+| Compliance | What rules apply? |
+| Scalability | How might volume grow? |
+| Cost | What constraints exist? |
+| Data Quality | What makes the data trustworthy? |
+| Output | What data product will be delivered? |
+
+This template will evolve as I learn more throughout the course.
+
+---
+
+ # Key Takeaways
+
+ My main takeaways from this lecture are:
+
+ 1. **Requirements should be gathered before implementation begins.**
+2. **Business requirements describe organizational goals.**
+3. **Stakeholder requirements describe what people need to accomplish their work.**
+4. **System requirements translate those needs into something engineers can design and implement.**
+5. **Functional requirements describe what the system must do.**
+6. **Non-functional requirements describe how well the system must operate and the constraints it must satisfy.**
+7. **Requirements can extend from high-level business goals all the way down to infrastructure resources.**
+8. **Stakeholders usually communicate in terms of goals and needs rather than technical specifications.**
+9. **Requirements gathering therefore requires active communication and questioning.**
+10. **Architecture and technology choices should be consequences of requirements rather than assumptions made at the beginning.**
+
+---
+
+ # Reflection
+
+ This lecture connects several of the ideas introduced so far.
+
+ The progression now looks like:
+
+```
+Understand the Business
+        ↓
+Understand the Stakeholders
+        ↓
+Understand Their Needs
+        ↓
+Translate Needs into Requirements
+        ↓
+Design the Architecture
+        ↓
+Select Technologies
+        ↓
+Build the System
+```
+
+ This gives me a much stronger framework for approaching the practical projects later in the course.
+
+ In particular, I want to avoid the common pattern of starting a project with:
+
+ > "Which technology should I use?"
+
+ Instead, I want to start with:
+
+ > **"What problem am I solving, who needs the solution, and what does the system need to accomplish?"**
+
+ Only after answering those questions should I decide how to implement the system.
+
+ For the financial projects in this repository, this means that the **requirements section should come before the architecture diagram and before the code**.
+
+ That gives each project a clear chain of reasoning:
+
+```
+Financial Problem
+      ↓
+Stakeholder Need
+      ↓
+Requirements
+      ↓
+Architecture
+      ↓
+Technology
+      ↓
+Implementation
+      ↓
+Data Product
+      ↓
+Business Value
+```
