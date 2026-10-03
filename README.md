@@ -104,7 +104,7 @@ This repository will evolve alongside the course.
 
 Rather than treating the course as a collection of isolated lectures, I will use the repository to document the progression from concept → implementation → financial application → reflection.
 
-1. Course Concepts
+# 1. Course Concepts
 
 Notes and summaries covering the fundamental ideas introduced throughout the course, including:
 
@@ -134,7 +134,7 @@ Cloud data systems
 
 Data serving
 
-2. Practical Sessions
+# 2. Practical Sessions
 
 Hands-on implementations from the course will be documented here, including the tools, technologies, architectures, and workflows used during practical exercises.
 
@@ -196,7 +196,7 @@ How would the system behave in a real production environment?
 
 This section will evolve as my understanding of data engineering improves.
 
-Course Structure
+# Course Structure
 
 The course series introduces Data Engineering through four broad areas:
 
@@ -208,11 +208,11 @@ Course 4	Data modeling, transformation, and serving data for end use cases
 
 The intention of this repository is to follow that progression while gradually building a more complete picture of how a modern data platform works.
 
-Technology & Tools
+# Technology & Tools
 
 As the course progresses, this section will be updated with the technologies and tools used in the lectures and practical sessions.
 
-The initial learning environment includes concepts and technologies around:
+# The initial learning environment includes concepts and technologies around:
 
 Python
 
