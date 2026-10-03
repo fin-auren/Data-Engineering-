@@ -2940,4 +2940,602 @@ Business Value
 
  > **What value does the resulting data product provide?**
 
+ ## Data Products Only Create Value When People Can Use Them
+
+ The previous lecture focused on communicating with stakeholders and adapting technical communication to the audience.
+
+ This lecture takes the idea one step further.
+
+ A data product can be technically excellent and still fail to create value if the people who are supposed to use it:
+
+ - Do not understand it
+- Do not trust it
+- Do not know how to use it
+- Do not see how it relates to their work
+- Do not feel comfortable working with data
+
+ This is where **data literacy** becomes important.
+
+---
+
+ # What Is Data Literacy?
+
+ In the lecture, data literacy is described as the ability to:
+
+ - Read data
+- Work with data
+- Analyze data
+- Communicate with data
+
+ But an important aspect is **comfort and confidence**.
+
+ The goal is not to turn every employee into a data professional.
+
+ Instead:
+
+ > **People should be sufficiently comfortable with data to use the data products available to them effectively.**
+
+ This creates an important relationship:
+
+```
+Good Data Product
+       +
+Data Literacy
+       ↓
+Effective Adoption
+       ↓
+Business Value
+```
+
+ Simply producing a dashboard or dataset does not guarantee that people will use it correctly.
+
+---
+
+ # The Adoption Problem
+
+ Imagine that a company spends significant resources building a sophisticated financial analytics dashboard.
+
+ The dashboard provides:
+
+ - Real-time metrics
+- Historical trends
+- Risk indicators
+- Portfolio analytics
+- Automated alerts
+
+ Technically, the system works.
+
+ But users don't understand:
+
+ - What the metrics mean
+- Where the numbers come from
+- How frequently they update
+- What assumptions are behind them
+- When they should use one metric instead of another
+
+ The result could be poor adoption.
+
+```
+Technology
+    ↓
+Data Product
+    ↓
+        ┌──────────────────┐
+        │ User understands?│
+        └────────┬─────────┘
+                 │
+          ┌──────┴──────┐
+          ↓             ↓
+         Yes             No
+          ↓               ↓
+       Adoption        Friction
+          ↓               ↓
+     Business Value    Low Usage
+```
+
+ Therefore, the success of a data product depends on more than its technical implementation.
+
+---
+
+ # Requirements Gathering Is Also Audience Understanding
+
+ One of the strongest points from this lecture is:
+
+ > **Requirements gathering should include understanding the audience for whom the product is being built.**
+
+ This means asking two different questions.
+
+ ### Business-level question
+
+ > What is the organization trying to accomplish?
+
+ ### Audience-level question
+
+ > What is this particular stakeholder trying to accomplish?
+
+ These are related, but they are not necessarily identical.
+
+```
+                BUSINESS
+                   │
+            Overall Objectives
+                   │
+          ┌────────┼────────┐
+          ↓        ↓        ↓
+       Finance   Sales   Marketing
+          │        │        │
+          ↓        ↓        ↓
+       Different Stakeholder Needs
+```
+
+ A successful data product needs to account for both.
+
+---
+
+ # Stakeholder Personas
+
+ Different stakeholders can have different goals even when they consume the same underlying data.
+
+ For example, consider a financial data platform.
+
+ ### Chief Financial Officer
+
+ May care about:
+
+ - Cash flow
+- Revenue
+- Costs
+- Financial performance
+- Forecasting
+
+ ### Chief Risk Officer
+
+ May care about:
+
+ - Exposure
+- Risk measures
+- Exceptions
+- Concentration
+- Risk trends
+
+ ### Sales Team
+
+ May care about:
+
+ - Customer activity
+- Sales targets
+- Customer segmentation
+- Pipeline performance
+
+ ### Marketing Team
+
+ May care about:
+
+ - Customer behaviour
+- Campaign performance
+- Segmentation
+- Conversion
+
+ ### Data Scientist
+
+ May care about:
+
+ - Historical data
+- Feature availability
+- Data quality
+- Consistent definitions
+- Reproducibility
+
+ The same underlying data infrastructure may support all of them.
+
+ But the **data product and communication layer may need to be different**.
+
+---
+
+ # Finance Example — One Dataset, Multiple Audiences
+
+ Suppose we build a transaction data platform.
+
+ At the core:
+
+```
+Transaction Sources
+       ↓
+Data Pipeline
+       ↓
+Curated Transaction Dataset
+```
+
+ This dataset can then support multiple consumers.
+
+```
+                    Curated
+                 Transaction Data
+                        │
+          ┌─────────────┼─────────────┐
+          ↓             ↓             ↓
+        Risk         Finance        Data Science
+      Analytics      Reporting       / ML
+          │             │             │
+          ↓             ↓             ↓
+      Exposure       Revenue       Fraud Model
+      Analysis       Analysis      Development
+```
+
+ The underlying data may be shared.
+
+ But the **requirements are different**.
+
+---
+
+ # Data Literacy and Financial Data
+
+ Data literacy becomes particularly important in finance because financial metrics often have specific definitions.
+
+ For example:
+
+ - Revenue
+- Profit
+- Cash flow
+- Exposure
+- Return
+- Volatility
+- Volume
+- Balance
+- Risk
+
+ A user may see a number on a dashboard and assume they understand it.
+
+ But the data engineer should ask:
+
+ > **What exactly does this number represent?**
+
+ For example:
+
+```
+Return
+  ├── Simple Return?
+  ├── Log Return?
+  ├── Daily Return?
+  ├── Cumulative Return?
+  └── Risk-adjusted Return?
+```
+
+ The technical pipeline can calculate a number perfectly.
+
+ But if the user interprets the metric differently from its intended definition, the data product can still be misused.
+
+---
+
+ # The Importance of Context
+
+ This reinforces a concept from the previous lecture:
+
+ > **Context is critical.**
+
+ Data without context can be misleading.
+
+ Consider:
+
+```
+Metric: 5.2%
+```
+
+ By itself, this tells us very little.
+
+ 5.2% of what?
+
+ - Return?
+- Growth?
+- Default rate?
+- Error rate?
+- Volatility?
+- Conversion rate?
+
+ A good data product should therefore provide enough context for the user to interpret the information correctly.
+
+ This may include:
+
+ - Metric definitions
+- Time period
+- Units
+- Source
+- Update frequency
+- Calculation methodology
+- Relevant filters
+- Business context
+
+---
+
+ # Adoption Should Be Considered During Design
+
+ A useful lesson from this lecture is that adoption should not be treated as something that happens after the technical implementation.
+
+ Instead:
+
+```
+Requirements
+     ↓
+Audience Understanding
+     ↓
+Data Product Design
+     ↓
+Implementation
+     ↓
+User Adoption
+```
+
+ The intended users should influence the design from the beginning.
+
+ For example, if a financial analyst needs to perform ad-hoc analysis, simply providing a static PDF report may not satisfy the real requirement.
+
+ If an executive needs a high-level KPI view, providing raw transaction tables may technically contain all the required information but may not be an effective interface.
+
+---
+
+ # Business Literacy for Data Engineers
+
+ Another major lesson is the importance of **business literacy**.
+
+ The goal is not to become a business executive or salesperson.
+
+ The goal is to understand how the organization operates.
+
+ For a data engineer, this means developing familiarity with concepts such as:
+
+ - Revenue
+- Costs
+- Profit
+- Cash flow
+- Customers
+- Products
+- Operations
+- Risk
+- KPIs
+- Business processes
+- Organizational objectives
+
+ In finance, this becomes even more important.
+
+ A finance-focused data engineer should gradually become comfortable with concepts such as:
+
+ - Financial statements
+- Transactions
+- Assets and liabilities
+- Portfolio concepts
+- Market data
+- Risk
+- Returns
+- Trading
+- Settlement
+- Liquidity
+- Regulatory considerations
+
+ The objective is not to become a financial analyst.
+
+ It is to understand enough of the domain to build better data systems.
+
+---
+
+ # Data Engineering + Business Literacy
+
+ The relationship can be represented as:
+
+```
+              DATA ENGINEERING
+                     +
+              BUSINESS CONTEXT
+                     +
+              DATA LITERACY
+                     ↓
+           Better Data Products
+                     ↓
+              Better Adoption
+                     ↓
+              Business Value
+```
+
+ This is an important evolution in how I am thinking about the role.
+
+ The data engineer is not simply responsible for the technical movement of information.
+
+ The engineer also needs to understand the environment in which that information will be used.
+
+---
+
+ # Audience Mapping for Future Finance Projects
+
+ For the projects in this repository, I want to explicitly identify the audience.
+
+ A useful template is:
+
+ | Stakeholder | What they care about | Data needed | Expected output |
+| --- | --- | --- | --- |
+| Finance | Financial performance | Financial transactions | Reports / KPIs |
+| Risk | Exposure and risk | Positions / market data | Risk metrics |
+| Sales | Customer and sales performance | Customer / transaction data | Sales analytics |
+| Marketing | Customer behaviour | Customer activity | Segmentation / campaign analytics |
+| Data Science | Historical patterns | Curated historical data | ML datasets |
+| Executive | Business KPIs | Aggregated metrics | Executive dashboard |
+
+This is not a fixed list.
+
+ Each project should identify its own actual stakeholders and requirements.
+
+---
+
+ # A Practical Audience Checklist
+
+ Before building a data product, I want to ask:
+
+ ### Who?
+
+ Who will use this?
+
+ ### Why?
+
+ What are they trying to accomplish?
+
+ ### What?
+
+ What information do they need?
+
+ ### How?
+
+ How will they use it?
+
+ ### When?
+
+ How frequently do they need it?
+
+ ### What does success mean?
+
+ What decision or action should the data enable?
+
+ ### What could go wrong?
+
+ How could misunderstanding or misuse of the data lead to a poor decision?
+
+ This final question is especially important for financial applications.
+
+---
+
+ # Finance Example — Risk Dashboard
+
+ Suppose the project is to build a risk dashboard.
+
+ A simplistic requirement might be:
+
+ > "Build a risk dashboard."
+
+ A better requirements conversation would identify:
+
+ ### Audience
+
+ Risk analysts and risk management.
+
+ ### Business Objective
+
+ Monitor portfolio risk and identify significant changes.
+
+ ### Data
+
+ Potentially:
+
+ - Positions
+- Market prices
+- Security identifiers
+- Exposure
+- Historical values
+- Risk metrics
+
+ ### Functional Requirements
+
+ The system should:
+
+ - Ingest required data
+- Calculate required metrics
+- Refresh the dashboard
+- Provide historical comparisons
+- Flag defined anomalies
+
+ ### Non-Functional Requirements
+
+ Consider:
+
+ - Data freshness
+- Reliability
+- Security
+- Auditability
+- Performance
+- Scalability
+
+ ### Data Literacy Considerations
+
+ Users should understand:
+
+ - What each risk metric means
+- How it is calculated
+- What period it represents
+- When it was last updated
+- What thresholds mean
+- What assumptions apply
+
+ Now the project is no longer simply:
+
+ > "Build a dashboard."
+
+ It becomes:
+
+ > **Build a data product that allows a defined audience to perform a defined business task using well-understood financial information.**
+
+---
+
+ # Key Takeaways
+
+ My main takeaways from this lecture are:
+
+ 1. **Data literacy means being comfortable and confident working with data.**
+2. **Data products need adoption to create practical value.**
+3. **Requirements gathering should include understanding the audience.**
+4. **Different stakeholders can have different objectives even when consuming related data.**
+5. **A single data platform may need to serve multiple stakeholder personas.**
+6. **Business objectives and individual stakeholder needs should both be considered.**
+7. **Financial data requires context because the meaning of a metric is often dependent on its definition and business use.**
+8. **Data engineers benefit from developing business literacy without needing to become business specialists.**
+9. **User adoption should influence data-product design from the beginning.**
+10. **A successful data engineer understands not only how to move data, but how people will use the resulting information.**
+
+---
+
+ # Reflection
+
+ The previous lectures established:
+
+```
+Business Goals
+      ↓
+Stakeholders
+      ↓
+Requirements
+      ↓
+Architecture
+```
+
+ This lecture adds another dimension:
+
+```
+Business Goals
+      ↓
+Stakeholders
+      ↓
+Audience Understanding
+      ↓
+Requirements
+      ↓
+Data Product
+      ↓
+Adoption
+      ↓
+Business Value
+```
+
+ This changes how I want to approach the finance projects in this repository.
+
+ I don't want to assume that providing technically correct data automatically means I have created a useful product.
+
+ For every significant project, I want to ask:
+
+ > **Who is the audience?**
+
+ > **What are they trying to accomplish?**
+
+ > **What does the data mean to them?**
+
+ > **What level of data literacy can I assume?**
+
+ > **How should the data product communicate its meaning?**
+
+ > **How will I know whether the product is actually useful?**
+
 
