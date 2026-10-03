@@ -1149,3 +1149,571 @@ Modern Data Platforms
 
  That historical context will be important as the course moves from concepts into the data engineering lifecycle, architecture, and practical implementation.
 
+
+ ## Data Engineering Does Not Happen in a Vacuum
+
+ A data engineer's job can be summarized simply:
+
+ > **Take raw data, transform it into something useful, and make it available for downstream use cases.**
+
+ But the word **useful** is important.
+
+ Data is not useful simply because it has been cleaned, stored, or transformed. It is useful when it satisfies the needs of the people and systems that consume it.
+
+ This means that data engineering is fundamentally connected to **stakeholders**.
+
+ A successful data engineer needs to understand both sides of the data pipeline:
+
+```
+        UPSTREAM
+           │
+           ▼
+    Source Systems
+           │
+           ▼
+     Data Engineer
+           │
+           ▼
+   Data Systems / Pipelines
+           │
+           ▼
+       DOWNSTREAM
+           │
+           ▼
+ Analysts / ML / Business
+```
+
+ The data engineer is therefore both a **consumer of upstream data** and a **provider of downstream data**.
+
+---
+
+ # Downstream Stakeholders
+
+ Downstream stakeholders are the people, teams, or systems that consume the data produced by the data engineering systems.
+
+ Depending on the organization, these might include:
+
+ - Data analysts
+- Data scientists
+- Machine-learning engineers
+- Software engineers
+- Product teams
+- Marketing teams
+- Sales teams
+- Risk teams
+- Executives
+- Other business users
+
+ Their requirements can be very different.
+
+ For example, a data scientist might need a large historical dataset for model development, while an executive might need a small number of highly reliable metrics on a dashboard.
+
+ The data engineer therefore needs to understand the **actual use case**, rather than simply delivering data.
+
+---
+
+ # Example: Serving a Business Analyst
+
+ Consider a business analyst who needs to query a database to build dashboards and analyze trends.
+
+ At first glance, the requirement might appear simple:
+
+ > "Give the analyst access to the sales data."
+
+ But a data engineer needs to ask deeper questions.
+
+ ### Frequency
+
+ How often does the analyst need the data?
+
+```
+Daily?
+Hourly?
+Every 15 minutes?
+Near real-time?
+```
+
+ ### Data Requirements
+
+ What information does the analyst actually need?
+
+ Which:
+
+ - Tables?
+- Columns?
+- Metrics?
+- Dimensions?
+- Filters?
+
+ ### Query Performance
+
+ Will the analyst repeatedly perform expensive joins or aggregations?
+
+ If so, could some of this work be performed upstream so that the analyst receives data in a more useful form?
+
+ ### Latency
+
+ How old can the data be?
+
+ For example:
+
+```
+Real-time
+    ↓
+5 minutes
+    ↓
+1 hour
+    ↓
+1 day
+    ↓
+1 week
+```
+
+ The answer depends entirely on the business use case.
+
+---
+
+ # A Simple Example: What Is a "Day"?
+
+ One of the most useful examples from this lecture is surprisingly simple.
+
+ Suppose an analyst asks:
+
+ > "Give me the total sales for each day."
+
+ This sounds unambiguous.
+
+ But imagine the company operates globally.
+
+ What exactly defines a day?
+
+```
+00:00 ─────────────────────── 23:59
+          Which Time Zone?
+```
+
+ Is the business day based on:
+
+ - UTC?
+- Local customer time?
+- Headquarters time?
+- Regional time?
+- Exchange time?
+
+ The calculation itself may be trivial.
+
+ The **definition of the metric** is not.
+
+ This illustrates an important data-engineering principle:
+
+ > **Data engineering problems are often definition problems before they are technical problems.**
+
+---
+
+ # Finance Perspective: The Definition of a Metric
+
+ This becomes especially important in finance.
+
+ Imagine a stakeholder asks:
+
+ > "What was the daily trading volume?"
+
+ Before building a pipeline, several questions need to be clarified.
+
+ What counts as:
+
+ - A trade?
+- A transaction?
+- Trading volume?
+- A trading day?
+- A cancelled trade?
+- A corrected trade?
+- A partial execution?
+
+ And which time zone defines the trading day?
+
+ For financial markets, the relevant time boundary may depend on the specific market or instrument.
+
+ Therefore:
+
+```
+Business Question
+       ↓
+Metric Definition
+       ↓
+Data Definition
+       ↓
+Transformation Logic
+       ↓
+Final Dataset
+```
+
+ A technically perfect pipeline can still produce a misleading result if the underlying business definition is wrong.
+
+---
+
+ # Upstream Stakeholders
+
+ The other side of the relationship is the **upstream stakeholder**.
+
+ These are the people or teams responsible for the systems from which the data engineer obtains raw data.
+
+ They may include:
+
+ - Software engineers
+- Application teams
+- Database administrators
+- Internal platform teams
+- External API providers
+- Third-party system owners
+
+ In this relationship, the roles are reversed.
+
+ The data engineer becomes the **data consumer**.
+
+```
+Source System
+     │
+     │ Raw Data
+     ▼
+Data Engineer
+     │
+     │ Processed Data
+     ▼
+Downstream Consumer
+```
+
+ The data engineer therefore needs to understand the source system just as downstream users need to understand the data they consume.
+
+---
+
+ # Understanding the Source
+
+ When working with an upstream system, important questions include:
+
+ ### Volume
+
+ How much data will be generated?
+
+```
+MB?
+GB?
+TB?
+PB?
+```
+
+ ### Frequency
+
+ How frequently is data generated?
+
+```
+Once per day?
+Every hour?
+Every minute?
+Continuously?
+```
+
+ ### Format
+
+ What format does the source provide?
+
+ For example:
+
+ - CSV
+- JSON
+- XML
+- Parquet
+- Database tables
+- API responses
+- Event streams
+
+ ### Schema
+
+ What fields exist?
+
+ What are their data types?
+
+ What relationships exist between entities?
+
+ ### Reliability
+
+ What happens when the source system becomes unavailable?
+
+ ### Security
+
+ Does the data contain sensitive information?
+
+ ### Compliance
+
+ Are there regulatory or organizational requirements governing the data?
+
+ ### Schema Changes
+
+ What happens when the source system changes?
+
+ For example:
+
+```
+Before:
+customer_id
+name
+amount
+
+After:
+customer_id
+name
+currency
+amount
+```
+
+ A seemingly small schema change can potentially break downstream pipelines.
+
+---
+
+ # Communication Is Part of Data Engineering
+
+ One of the most important lessons from this lecture is that communication is not separate from engineering.
+
+ Good communication with upstream teams can provide early warnings about:
+
+ - System outages
+- Planned maintenance
+- Schema changes
+- New fields
+- Removed fields
+- Changes in data volume
+- Changes in data frequency
+- Changes in business logic
+
+ This allows the data engineering team to prepare rather than react.
+
+ A healthy relationship might look like:
+
+```
+Source Team
+    │
+    │  Changes / Expectations
+    ▼
+Data Engineering
+    │
+    │  Requirements / Feedback
+    ▼
+Source Team
+```
+
+ This feedback loop can improve the reliability of the overall data system.
+
+---
+
+ # Finance Perspective: Upstream Systems
+
+ In a financial environment, upstream sources could include:
+
+```
+                Financial Data Sources
+                        │
+       ┌────────────────┼────────────────┐
+       ↓                ↓                ↓
+ Transaction        Market Data       Customer
+ Systems            Providers         Systems
+       │                │                │
+       └────────────────┼────────────────┘
+                        ↓
+                 Data Engineering
+                        ↓
+              Financial Data Platform
+                        ↓
+       ┌────────────────┼────────────────┐
+       ↓                ↓                ↓
+     Risk           Analytics          ML/AI
+```
+
+ Each source can have completely different characteristics.
+
+ For example, transaction systems may produce structured records, while market-data providers may deliver continuous event streams.
+
+ This means the data engineer must understand not only the destination but also the **characteristics of every important source**.
+
+---
+
+ # The Data Engineer as a Bridge
+
+ A useful mental model from this lecture is to think of the data engineer as a bridge between two worlds.
+
+```
+             UPSTREAM
+          Source Systems
+               │
+               │
+               ▼
+       ┌───────────────┐
+       │               │
+       │ DATA ENGINEER │
+       │               │
+       └───────────────┘
+               │
+               │
+               ▼
+            DOWNSTREAM
+      Business / Analytics
+          / ML / AI
+```
+
+ The data engineer needs to understand both directions.
+
+ ### Looking upstream
+
+ Ask:
+
+ > **What data am I receiving, where does it come from, and what can affect its reliability?**
+
+ ### Looking downstream
+
+ Ask:
+
+ > **Who is consuming this data, what are they trying to achieve, and what does "useful" mean to them?**
+
+---
+
+ # Stakeholder Requirements Framework
+
+ This lecture provides a useful framework that I can apply to future projects in this repository.
+
+ ## Upstream Requirements
+
+ When dealing with source systems:
+
+ - What is the source?
+- Who owns it?
+- What data does it produce?
+- How frequently is it generated?
+- What is the expected volume?
+- What format does it use?
+- What is the schema?
+- How reliable is the source?
+- How are changes communicated?
+- Are there security or regulatory constraints?
+
+ ## Downstream Requirements
+
+ When dealing with data consumers:
+
+ - Who consumes the data?
+- What problem are they solving?
+- What data do they need?
+- How frequently do they need it?
+- How fresh does it need to be?
+- What level of accuracy is required?
+- What metrics need to be defined?
+- What query patterns are expected?
+- What performance is required?
+- What decisions will the data support?
+
+---
+
+ # Applying the Framework to a Financial Project
+
+ For future financial projects in this repository, I want to explicitly document both sides.
+
+ For example:
+
+ ### Project: Financial Transaction Analytics Pipeline
+
+```
+UPSTREAM
+───────────────
+Transaction System
+      │
+      │
+      ▼
+Raw Transactions
+      │
+      ▼
+DATA ENGINEERING
+───────────────
+Ingestion
+Validation
+Transformation
+Storage
+Quality Checks
+      │
+      ▼
+DOWNSTREAM
+───────────────
+Risk Analysts
+Financial Analysts
+Data Scientists
+Dashboards
+ML Models
+```
+
+ Before implementing the pipeline, I would want to understand:
+
+ **Upstream**
+
+ - How are transactions generated?
+- How frequently are they available?
+- What fields are provided?
+- Can transactions be corrected?
+- Can records arrive late?
+- Can the schema change?
+
+ **Downstream**
+
+ - Who needs the transaction data?
+- What metrics are required?
+- How fresh must the data be?
+- What historical period is needed?
+- What aggregations are commonly performed?
+- What decisions will the resulting data support?
+
+ Only after answering these questions should implementation decisions begin.
+
+---
+
+ # Key Takeaways
+
+ My main takeaways from this lecture are:
+
+ 1. **Data engineering is fundamentally stakeholder-driven.**
+2. **The data engineer serves downstream consumers while depending on upstream systems.**
+3. **Understanding the source data is as important as understanding the destination.**
+4. **Data requirements include more than columns and data types; they also include volume, frequency, latency, reliability, security, and compliance.**
+5. **Metrics need precise definitions before they can be implemented correctly.**
+6. **Time zones and business definitions can materially affect analytical results.**
+7. **Communication with upstream system owners can improve pipeline reliability.**
+8. **Downstream requirements should influence how data is transformed and served.**
+9. **A data pipeline should be designed around the needs of its users rather than around a technology alone.**
+10. **In financial data engineering, precise definitions and stakeholder alignment are particularly important because small differences in interpretation can change analytical results.**
+
+---
+
+ # Reflection
+
+ This lecture expands on the idea from the previous lecture that **technology should follow requirements**.
+
+ I now see the data engineer as someone operating between two boundaries:
+
+```
+What the organization produces
+             ↓
+          UPSTREAM
+             ↓
+      DATA ENGINEERING
+             ↓
+        DOWNSTREAM
+             ↓
+What the organization needs
+```
+
+ The interesting part is that the data engineer has to understand both.
+
+ If I only understand the source, I may build a technically reliable pipeline that nobody finds useful.
+
+ If I only understand the consumer, I may design an excellent analytical dataset without understanding the limitations or reliability of the underlying source.
+
+ The real objective is to connect the two.
+
+ For the financial projects in this repository, I therefore want to make **stakeholder analysis and requirements gathering part of the project itself**, rather than treating them as documentation added after the implementation.
+
+
