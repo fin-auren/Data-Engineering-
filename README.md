@@ -140,7 +140,7 @@ Hands-on implementations from the course will be documented here, including the 
 
 Where appropriate, I will reproduce or extend the exercises so that I understand why a particular engineering approach is being used rather than simply following the implementation.
 
-3. Financial Use Cases
+# 3. Financial Use Cases
 
 I will progressively adapt selected concepts and practical exercises to financial scenarios.
 
@@ -172,7 +172,7 @@ Data platforms for investment analytics
 
 These applications will be exploratory and are intended primarily as engineering learning exercises.
 
-4. My Perspective
+# 4. My Perspective
 
 An important part of this repository will be my own observations and interpretations.
 
@@ -262,29 +262,4 @@ Personal Reflection
       =
 Data Engineering Learning Portfolio
 
-Starting Point
 
-The introductory lecture establishes a simple but important idea:
-
-Data engineering is about building the foundation that allows data to become useful.
-
-As I progress through the course, this repository will evolve from basic concepts and individual practical exercises into a collection of interconnected projects demonstrating how data moves from its source to a form that can support analytics, machine learning, AI, and financial decision-making.
-
-The goal is not only to learn the tools.
-
-The goal is to develop the engineering mindset required to design reliable data systems.
-
-Learning Log
-
-This section will be updated throughout the course.
-
-Module	Topic	Practical	Financial Application	Status
-01	Introduction to Data Engineering	—	Data Engineering in Finance	🟢 Started
-02	To be added	To be added	To be added	⚪ Upcoming
-03	To be added	To be added	To be added	⚪ Upcoming
-...	...	...	...	...
-Disclaimer
-
-The financial applications explored in this repository are educational and experimental projects. They are intended to demonstrate data engineering concepts and should not be interpreted as financial advice, investment recommendations, or production-ready financial systems.
-
-This README will be continuously updated as I progress through the Data Engineering course.
