@@ -263,23 +263,25 @@ Personal Reflection
 Data Engineering Learning Portfolio
 
 
-Lecture 2 — Thinking Like a Data Engineer
-From Business Needs to Data Systems
+ ## From Business Needs to Data Systems
 
-The second lecture introduces a scenario that is common across many organizations: a company hires a data scientist to generate insights and build machine-learning systems, only to discover that the data infrastructure required to support those goals does not exist.
+ The second lecture introduces a scenario that is common across many organizations: a company hires a data scientist to generate insights and build machine-learning systems, only to discover that the data infrastructure required to support those goals does not exist.
 
-This highlights an important distinction:
+ This highlights an important distinction:
 
-Data science and machine learning can create value from data, but data engineering provides much of the infrastructure that makes that work possible.
+ > **Data science and machine learning can create value from data, but data engineering provides much of the infrastructure that makes that work possible.**
 
-A data engineer's responsibility therefore goes beyond writing pipelines or working with cloud technologies. The role starts with understanding what the organization is trying to achieve and translating those needs into reliable data systems.
+ A data engineer's responsibility therefore goes beyond writing pipelines or working with cloud technologies. The role starts with understanding **what the organization is trying to achieve** and translating those needs into reliable data systems.
 
-The Data Engineer's Role
+---
 
-A data engineer sits at an important intersection between business requirements, data, software systems, analytics, and technology.
+ ## The Data Engineer's Role
 
-A simplified view is:
+ A data engineer sits at an important intersection between business requirements, data, software systems, analytics, and technology.
 
+ A simplified view is:
+
+```
 Business / Stakeholders
           ↓
      Business Needs
@@ -293,92 +295,78 @@ Business / Stakeholders
  Reliable & Accessible Data
           ↓
  Analytics / ML / AI / Applications
+```
 
+ One of the central lessons from this lecture is that the technology should come **after** understanding the problem.
 
-One of the central lessons from this lecture is that the technology should come after understanding the problem.
+ It can be tempting to immediately think about:
 
-It can be tempting to immediately think about:
+ - Which database should I use?
+- Should I use AWS?
+- Which orchestration tool should I choose?
+- Should I build a batch or streaming pipeline?
+- Which programming language or framework should I use?
 
-Which database should I use?
+ But these are implementation questions.
 
-Should I use AWS?
+ The more fundamental question is:
 
-Which orchestration tool should I choose?
+ > **What problem are we actually trying to solve, and what does the organization need from the data system?**
 
-Should I build a batch or streaming pipeline?
+---
 
-Which programming language or framework should I use?
+ ## My Perspective: Applying This to Finance
 
-But these are implementation questions.
+ This principle becomes particularly important when thinking about financial systems.
 
-The more fundamental question is:
+ For example, imagine a company wants to improve its portfolio analytics.
 
-What problem are we actually trying to solve, and what does the organization need from the data system?
+ A technology-first approach might immediately lead to questions about databases, APIs, cloud services, or streaming frameworks.
 
-My Perspective: Applying This to Finance
+ A data-engineering-first approach would begin differently.
 
-This principle becomes particularly important when thinking about financial systems.
+ ### Step 1 — Understand the stakeholder
 
-For example, imagine a company wants to improve its portfolio analytics.
+ Who needs the system?
 
-A technology-first approach might immediately lead to questions about databases, APIs, cloud services, or streaming frameworks.
+ Possible stakeholders could include:
 
-A data-engineering-first approach would begin differently.
+ - Portfolio managers
+- Risk analysts
+- Financial analysts
+- Compliance teams
+- Executives
+- Data scientists
+- Software/application teams
 
-Step 1 — Understand the stakeholder
+ ### Step 2 — Understand the business requirement
 
-Who needs the system?
+ For example:
 
-Possible stakeholders could include:
+ > "Portfolio managers need updated portfolio and market information to analyse portfolio performance during the trading day."
 
-Portfolio managers
+ This requirement contains much more information than simply saying:
 
-Risk analysts
+ > "We need a market-data pipeline."
 
-Financial analysts
+ ### Step 3 — Translate the requirement into data requirements
 
-Compliance teams
+ We may need to determine:
 
-Executives
+ - Which market data is required?
+- How frequently should it be updated?
+- What historical data is required?
+- How much latency is acceptable?
+- How accurate does the data need to be?
+- How should missing data be handled?
+- Who should have access?
+- How long should the data be retained?
 
-Data scientists
+ ### Step 4 — Design the system
 
-Software/application teams
+ Only after understanding those requirements should we start considering the architecture and technology.
 
-Step 2 — Understand the business requirement
-
-For example:
-
-"Portfolio managers need updated portfolio and market information to analyse portfolio performance during the trading day."
-
-This requirement contains much more information than simply saying:
-
-"We need a market-data pipeline."
-
-Step 3 — Translate the requirement into data requirements
-
-We may need to determine:
-
-Which market data is required?
-
-How frequently should it be updated?
-
-What historical data is required?
-
-How much latency is acceptable?
-
-How accurate does the data need to be?
-
-How should missing data be handled?
-
-Who should have access?
-
-How long should the data be retained?
-
-Step 4 — Design the system
-
-Only after understanding those requirements should we start considering the architecture and technology.
-
+```
 Stakeholder Need
        ↓
 Business Requirement
@@ -392,33 +380,39 @@ Architecture
 Technology Selection
        ↓
 Implementation
+```
 
+ This sequence is one of the ideas I want to carry throughout the course.
 
-This sequence is one of the ideas I want to carry throughout the course.
+---
 
-Avoiding the "Tool-First" Approach
+ ## Avoiding the "Tool-First" Approach
 
-One of the strongest points from this lecture is the warning against choosing technologies before understanding the problem.
+ One of the strongest points from this lecture is the warning against choosing technologies before understanding the problem.
 
-Technology changes quickly.
+ Technology changes quickly.
 
-Cloud platforms, databases, orchestration frameworks, processing engines, and AI tools continue to evolve. However, the underlying process of understanding requirements and designing systems around those requirements is much more durable.
+ Cloud platforms, databases, orchestration frameworks, processing engines, and AI tools continue to evolve. However, the underlying process of understanding requirements and designing systems around those requirements is much more durable.
 
-For this reason, I want to approach the practical projects in this repository with the following mindset:
+ For this reason, I want to approach the practical projects in this repository with the following mindset:
 
+```
 ❌ Tool → Problem
 
 Instead:
 
 ✅ Problem → Requirements → Architecture → Tool → Implementation
+```
 
+ This distinction will become increasingly important as the course introduces more technologies.
 
-This distinction will become increasingly important as the course introduces more technologies.
+---
 
-Data Engineering as a Translation Layer
+ ## Data Engineering as a Translation Layer
 
-Another way I understand the role of a data engineer is as a translation layer between different parts of an organization.
+ Another way I understand the role of a data engineer is as a **translation layer** between different parts of an organization.
 
+```
                     Business
                        │
                        ▼
@@ -434,80 +428,72 @@ Another way I understand the role of a data engineer is as a translation layer b
                  │           │
                  ▼           ▼
              Data      Analytics / ML
+```
 
+ The data engineer needs to understand enough about the business problem to design an appropriate system, while also understanding enough about the technical environment to implement that system.
 
-The data engineer needs to understand enough about the business problem to design an appropriate system, while also understanding enough about the technical environment to implement that system.
+ This makes data engineering both a **technical discipline and a problem-solving discipline**.
 
-This makes data engineering both a technical discipline and a problem-solving discipline.
+---
 
-Thinking Before Coding
+ ## Thinking Before Coding
 
-An interesting part of this lecture is that the first week does not focus on writing code.
+ An interesting part of this lecture is that the first week does not focus on writing code.
 
-There are no immediate Python implementations or cloud deployments.
+ There are no immediate Python implementations or cloud deployments.
 
-Instead, the focus is on developing the ability to:
+ Instead, the focus is on developing the ability to:
 
-Understand the data engineering lifecycle
+ - Understand the data engineering lifecycle
+- Understand stakeholders
+- Identify business value
+- Gather requirements
+- Translate requirements into system requirements
+- Think about architecture
+- Understand trade-offs
+- Select technologies based on requirements
 
-Understand stakeholders
+ This is useful for my learning approach because it creates a distinction between **knowing how to use a tool** and **knowing why a tool should be used**.
 
-Identify business value
+ I want to maintain this distinction throughout the repository.
 
-Gather requirements
+---
 
-Translate requirements into system requirements
+ ## Course Roadmap Introduced in This Lecture
 
-Think about architecture
+ The course is structured progressively.
 
-Understand trade-offs
+ ### Week 1 — The Data Engineering Mindset
 
-Select technologies based on requirements
+ The focus is on understanding the field at a high level:
 
-This is useful for my learning approach because it creates a distinction between knowing how to use a tool and knowing why a tool should be used.
+ - Data engineering lifecycle
+- History of data engineering
+- Roles and stakeholders
+- Business value
+- Stakeholder needs
+- System requirements
+- Developing a data-engineering mindset
 
-I want to maintain this distinction throughout the repository.
+ ### Week 2 — Data Engineering Lifecycle
 
-Course Roadmap Introduced in This Lecture
+ The second week goes deeper into the different stages of the data engineering lifecycle.
 
-The course is structured progressively.
+ It combines conceptual material with a practical AWS lab involving cloud data pipelines.
 
-Week 1 — The Data Engineering Mindset
+ ### Week 3 — Data Architecture
 
-The focus is on understanding the field at a high level:
+ The focus shifts toward principles of good data architecture.
 
-Data engineering lifecycle
+ The objective is to understand how different components come together to create effective data systems.
 
-History of data engineering
+ ### Week 4 — Designing for Stakeholder Needs
 
-Roles and stakeholders
+ The final week brings the concepts together by designing and building a data architecture based on stakeholder requirements.
 
-Business value
+ This creates a progression:
 
-Stakeholder needs
-
-System requirements
-
-Developing a data-engineering mindset
-
-Week 2 — Data Engineering Lifecycle
-
-The second week goes deeper into the different stages of the data engineering lifecycle.
-
-It combines conceptual material with a practical AWS lab involving cloud data pipelines.
-
-Week 3 — Data Architecture
-
-The focus shifts toward principles of good data architecture.
-
-The objective is to understand how different components come together to create effective data systems.
-
-Week 4 — Designing for Stakeholder Needs
-
-The final week brings the concepts together by designing and building a data architecture based on stakeholder requirements.
-
-This creates a progression:
-
+```
 Think
   ↓
 Understand the Lifecycle
@@ -517,85 +503,55 @@ Understand Architecture
 Design a System
   ↓
 Build the System
+```
 
-Financial Case Study Framework
+---
 
-Going forward, I will use a similar framework when adapting course concepts to financial use cases.
+ ## Financial Case Study Framework
 
-For each relevant project, I will try to document:
+ Going forward, I will use a similar framework when adapting course concepts to financial use cases.
 
-1. Business Problem
+ For each relevant project, I will try to document:
 
-What financial or business problem are we trying to solve?
+ ### 1\. Business Problem
 
-2. Stakeholders
+ What financial or business problem are we trying to solve?
 
-Who will use the data or benefit from the system?
+ ### 2\. Stakeholders
 
-3. Requirements
+ Who will use the data or benefit from the system?
 
-What does the system need to provide?
+ ### 3\. Requirements
 
-4. Data
+ What does the system need to provide?
 
-What data sources are required?
+ ### 4\. Data
 
-5. Architecture
+ What data sources are required?
 
-How should the data move through the system?
+ ### 5\. Architecture
 
-6. Technology
+ How should the data move through the system?
 
-Which tools or platforms are appropriate, and why?
+ ### 6\. Technology
 
-7. Implementation
+ Which tools or platforms are appropriate, and why?
 
-How can the system actually be built?
+ ### 7\. Implementation
 
-8. Data Quality
+ How can the system actually be built?
 
-How do we know that the data is reliable?
+ ### 8\. Data Quality
 
-9. Monitoring
+ How do we know that the data is reliable?
 
-How would we know if something goes wrong?
+ ### 9\. Monitoring
 
-10. Reflection
+ How would we know if something goes wrong?
 
-What did I learn, and what would I change in a real-world implementation?
+ ### 10\. Reflection
 
-Key Takeaways
+ What did I learn, and what would I change in a real-world implementation?
 
-My main takeaways from this lecture are:
 
-Data engineering exists to enable business and data-driven outcomes.
 
-Data engineers need to understand stakeholders, not just technologies.
-
-Requirements should drive architecture and technology selection.
-
-Choosing tools before understanding the problem can lead to poor system design.
-
-Thinking like a data engineer comes before implementing data systems.
-
-The same foundational data-engineering skills can support analytics, machine learning, AI, and application use cases.
-
-Financial data engineering should begin with the financial/business problem rather than with a particular technology.
-
-Reflection
-
-This lecture changes the way I want to approach the projects in this repository.
-
-Instead of documenting only what I built, I want to document why I built it that way.
-
-For example, if a later project uses a particular AWS service, database, orchestration tool, or processing framework, I want the explanation to start with the requirements that led to that decision.
-
-The goal is therefore to gradually move from:
-
-"I know how to use this technology."
-
-towards:
-
-"I understand the problem, I can define the requirements, and I can justify an appropriate technical solution."
-
-That distinction is, in my view, one of the foundations of becoming a data engineer.
