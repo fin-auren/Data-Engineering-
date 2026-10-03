@@ -2332,3 +2332,612 @@ Data Product
       ↓
 Business Value
 ```
+
+## Data Engineering Is Also a Communication Discipline
+
+ The previous lecture established that requirements gathering begins with understanding stakeholder needs and translating them into system requirements.
+
+ This lecture adds another important dimension:
+
+ > **Understanding the business is not optional if a data engineer wants to create meaningful value.**
+
+ A data engineer may understand:
+
+ - Data pipelines
+- Databases
+- APIs
+- Cloud infrastructure
+- Data models
+- Distributed systems
+- Orchestration
+- Data quality
+
+ But technical knowledge alone does not guarantee that the system will solve the right business problem.
+
+ The data engineer needs to understand **why the data matters**.
+
+---
+
+ # The Data Engineer as a Translator
+
+ One of the strongest ideas from this lecture is the role of the data engineer as a translator between technical and business worlds.
+
+```
+                    BUSINESS
+                       │
+                       │ Business Goals
+                       ▼
+              ┌─────────────────┐
+              │  DATA ENGINEER  │
+              │                 │
+              │   Translation   │
+              └─────────────────┘
+                       │
+                       │ Technical Requirements
+                       ▼
+                   DATA SYSTEM
+```
+
+ The translation works in both directions.
+
+ ### Business → Technical
+
+ A business leader might say:
+
+ > "We need better visibility into customer behaviour."
+
+ The data engineer needs to determine:
+
+ - What does "better visibility" mean?
+- Which customers?
+- Which behaviours?
+- What data is required?
+- How frequently should it be updated?
+- Who will use it?
+- What decisions will it support?
+
+ ### Technical → Business
+
+ The data engineer may then need to explain:
+
+ > "We are building an incremental ingestion pipeline that updates the analytical dataset every hour."
+
+ But a business stakeholder may care more about:
+
+ > "Your dashboard will now reflect customer activity within approximately one hour instead of waiting until the next day."
+
+ The underlying technical work is the same.
+
+ The **communication is different**.
+
+---
+
+ # Data Engineers Hold Important Context
+
+ A particularly useful perspective from the lecture is that data engineers often have visibility into how information flows through an organization.
+
+ They may understand:
+
+```
+Source Systems
+      ↓
+Ingestion
+      ↓
+Transformation
+      ↓
+Storage
+      ↓
+Data Products
+      ↓
+Analytics / ML / Applications
+```
+
+ This gives them an important perspective across the organization.
+
+ The data engineer may know:
+
+ - Where data originates
+- How it is transformed
+- Which systems depend on it
+- Where quality problems occur
+- How frequently it changes
+- Which downstream teams consume it
+- What limitations exist in the current architecture
+
+ That context can make the data engineer an important participant in business discussions.
+
+---
+
+ # From Back Office to Business Context
+
+ The lecture challenges the idea that data engineering should be treated purely as a back-office technical function.
+
+ The technical work is important, but its value ultimately comes from enabling something else.
+
+ For example:
+
+```
+Data Pipeline
+     ↓
+Reliable Data
+     ↓
+Better Analysis
+     ↓
+Better Information
+     ↓
+Better Business Decisions
+```
+
+ The pipeline itself is rarely the final objective.
+
+ The objective is usually the **value enabled by the pipeline**.
+
+ This changes the way I want to approach projects in this repository.
+
+ Instead of documenting only:
+
+ > "I built an AWS data pipeline."
+
+ I want to document:
+
+ > "I built an AWS data pipeline to provide \[stakeholder\] with \[data product\] so they can \[business/use-case objective\]."
+
+---
+
+ # Knowing Your Audience
+
+ A central lesson from the discussion is:
+
+ > **Know your audience.**
+
+ Not every stakeholder has the same technical background.
+
+ A useful mental model is:
+
+```
+Functional Stakeholder
+        │
+        │ Less technical
+        ▼
+   Business Language
+
+Techno-Functional
+        │
+        │ Mixed
+        ▼
+Business + Selected Technical Concepts
+
+Technical Stakeholder
+        │
+        │ Highly technical
+        ▼
+Technical Language
+```
+
+ The same project may therefore need to be explained differently to different people.
+
+---
+
+ # Functional Stakeholders
+
+ A functional stakeholder may primarily care about:
+
+ - Revenue
+- Customers
+- Costs
+- Risk
+- Operations
+- Marketing
+- Product performance
+- Business KPIs
+
+ They may not need to know the details of:
+
+ - Data pipelines
+- Semantic layers
+- Source-to-target mappings
+- Orchestration
+- Distributed processing
+
+ For this audience, the conversation should begin with the business problem.
+
+ For example, rather than:
+
+ > "We're implementing an incremental ELT architecture."
+
+ A more useful explanation might be:
+
+ > "The data will be refreshed throughout the day, so the operations team can monitor transaction activity without waiting for the next daily batch."
+
+ The second statement communicates the same underlying goal in business terms.
+
+---
+
+ # Technical Stakeholders
+
+ Technical stakeholders may want much more detail.
+
+ Depending on their role, it may be appropriate to discuss:
+
+ - Architecture
+- APIs
+- Data contracts
+- Schemas
+- Data models
+- Processing patterns
+- Infrastructure
+- Performance
+- Failure modes
+- Observability
+- Security
+
+ In this situation, technical detail is useful because it helps communicate the actual engineering decisions.
+
+ The important principle is not to avoid technical language.
+
+ It is to **use the appropriate level of technical language for the audience**.
+
+---
+
+ # How to Determine the Right Level
+
+ The lecture suggests several signals that can help determine how technical a stakeholder may be.
+
+ ### 1\. Their role
+
+ Look at their job title and responsibilities.
+
+ ### 2\. Where they report
+
+ Their organizational position can provide clues about whether their role is primarily technical, functional, or strategic.
+
+ ### 3\. Their questions
+
+ The easiest way to determine technical depth may simply be to listen.
+
+ If they ask:
+
+ > "How are you handling schema evolution?"
+
+ That may indicate comfort with technical detail.
+
+ If they ask:
+
+ > "When will the dashboard reflect the new data?"
+
+ They may primarily care about the business outcome.
+
+ ### 4\. Let the conversation guide you
+
+ A useful principle is:
+
+ > **Start with the business context and increase technical depth when the stakeholder demonstrates that it is useful.**
+
+---
+
+ # Finance Perspective — Communicating the Same Pipeline
+
+ Consider a financial transaction monitoring pipeline.
+
+ The underlying architecture might look like:
+
+```
+Transaction API
+      ↓
+Ingestion
+      ↓
+Validation
+      ↓
+Transformation
+      ↓
+Cloud Storage
+      ↓
+Analytics Layer
+      ↓
+Monitoring Dashboard
+```
+
+ Different stakeholders may describe the value differently.
+
+ ### Executive
+
+ > "We can see transaction activity throughout the day instead of waiting for the daily report."
+
+ ### Operations Manager
+
+ > "The dashboard provides updated transaction activity so the team can identify unusual changes earlier."
+
+ ### Risk Analyst
+
+ > "The pipeline provides refreshed transaction-level data that can be used for exposure and anomaly analysis."
+
+ ### Data Engineer
+
+ > "The pipeline ingests transaction events, validates the schema, applies transformations, and publishes curated datasets to the analytical layer."
+
+ ### Data Scientist
+
+ > "The curated transaction dataset provides consistent historical features for model development."
+
+ Same system.
+
+ Different language.
+
+---
+
+ # Business Context Is Critical in Finance
+
+ This principle is especially relevant to financial data engineering.
+
+ Financial datasets can contain technically simple fields whose meaning depends heavily on context.
+
+ For example:
+
+```
+amount
+price
+volume
+balance
+return
+exposure
+risk
+transaction_date
+settlement_date
+```
+
+ Knowing the field name is not enough.
+
+ A data engineer needs to understand what the field represents within the business process.
+
+ For example:
+
+```
+Transaction Date
+       ≠
+Settlement Date
+```
+
+ Both may be valid dates, but they represent different events.
+
+ Similarly:
+
+```
+Price
+   ≠
+Market Value
+   ≠
+Notional Value
+```
+
+ Without business context, it is possible to build a technically functioning pipeline that produces the wrong analytical interpretation.
+
+---
+
+ # Communication and Data Quality
+
+ This connects directly to data quality.
+
+ Suppose a stakeholder says:
+
+ > "The numbers don't look right."
+
+ A purely technical response might be:
+
+ > "The pipeline completed successfully."
+
+ But successful execution does not necessarily mean correct business results.
+
+ A better investigation is:
+
+```
+Did the pipeline run?
+       ↓
+Was the data complete?
+       ↓
+Was the transformation correct?
+       ↓
+Were the business definitions correct?
+       ↓
+Does the result match stakeholder expectations?
+```
+
+ This demonstrates another important distinction:
+
+ > **Pipeline correctness and business correctness are not necessarily the same thing.**
+
+---
+
+ # Communication as an Engineering Skill
+
+ This lecture changes the way I think about the skill set of a data engineer.
+
+ A simplified view might be:
+
+```
+Technical Skills
+      +
+Data Skills
+      +
+Business Understanding
+      +
+Communication
+      ↓
+Effective Data Engineering
+```
+
+ Technical skills allow us to build systems.
+
+ Data skills allow us to work with information.
+
+ Business understanding allows us to understand **why the system matters**.
+
+ Communication allows us to make sure that different stakeholders understand and can use what we build.
+
+---
+
+ # A Stakeholder Communication Framework
+
+ For future projects, I want to separate communication into four layers.
+
+ ## 1\. Context
+
+ What is the business problem?
+
+ > Why are we doing this?
+
+ ## 2\. Outcome
+
+ What will change if the project succeeds?
+
+ > What value will the stakeholder receive?
+
+ ## 3\. Data
+
+ What information is required?
+
+ > What data enables the outcome?
+
+ ## 4\. Technology
+
+ How will we build it?
+
+ > What architecture and tools will satisfy the requirements?
+
+ This gives us:
+
+```
+WHY
+ ↓
+WHAT OUTCOME
+ ↓
+WHAT DATA
+ ↓
+HOW
+```
+
+ Rather than beginning with the final question.
+
+---
+
+ # Finance Project Documentation Pattern
+
+ For the projects I build throughout this course, I want to capture this reasoning explicitly.
+
+ For example:
+
+ ### Business Problem
+
+ Financial analysts need more timely visibility into transaction activity.
+
+ ### Stakeholder
+
+ Financial analytics team.
+
+ ### Desired Outcome
+
+ Enable analysts to monitor transaction activity throughout the business day.
+
+ ### Data Required
+
+ - Transaction records
+- Transaction timestamps
+- Account/customer identifiers
+- Transaction amounts
+- Transaction categories
+
+ ### Functional Requirement
+
+ The system must ingest and make new transaction records available to analysts periodically throughout the day.
+
+ ### Non-Functional Requirements
+
+ The system should consider:
+
+ - Freshness
+- Reliability
+- Security
+- Scalability
+- Cost
+- Data quality
+
+ ### Technical Solution
+
+ Only now do we decide:
+
+ - Batch vs streaming
+- Storage technology
+- Processing technology
+- Orchestration
+- Cloud services
+- Data model
+
+ This preserves the connection between the business problem and the technical implementation.
+
+---
+
+ # Key Takeaways
+
+ My main takeaways from this lecture are:
+
+ 1. **Data engineers need business context, not just technical skills.**
+2. **Data engineering can act as a bridge between business and technology.**
+3. **Understanding how information flows through an organization is valuable.**
+4. **Communication should be adapted to the stakeholder's technical background.**
+5. **Functional stakeholders generally need business outcomes rather than technical implementation details.**
+6. **Technical stakeholders may benefit from deeper architectural and engineering discussions.**
+7. **The same data system may need to be explained differently to different audiences.**
+8. **Business correctness is not necessarily the same as technical pipeline correctness.**
+9. **Understanding the meaning of financial data is just as important as moving it through a pipeline.**
+10. **A data engineer should be able to explain not only what was built, but why it matters.**
+
+---
+
+ # Reflection
+
+ The previous lectures taught me to start with stakeholders and requirements.
+
+ This lecture adds another layer:
+
+ > **I need to understand the stakeholder well enough to communicate the requirements and proposed solution in a way that makes sense to them.**
+
+ The progression now looks like:
+
+```
+Business Context
+      ↓
+Stakeholders
+      ↓
+Their Needs
+      ↓
+Requirements
+      ↓
+Business + Technical Communication
+      ↓
+Architecture
+      ↓
+Implementation
+      ↓
+Business Value
+```
+
+ For my finance-focused projects, I want to make this particularly explicit.
+
+ I don't want the repository to become a collection of:
+
+ > "Here is a Python script that processes financial data."
+
+ Instead, I want each project to answer:
+
+ > **Who needs this data?**
+
+ > **What are they trying to accomplish?**
+
+ > **What does the data mean in its business context?**
+
+ > **What requirements follow from those needs?**
+
+ > **How does the architecture satisfy those requirements?**
+
+ > **What value does the resulting data product provide?**
+
+
