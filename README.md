@@ -1,8 +1,8 @@
-Data Engineering for Finance
+# Data Engineering for Finance
 
 A practical learning repository documenting my journey through Data Engineering, with a focus on applying data engineering principles to financial use cases.
 
-Introduction
+# Introduction
 
 Over the last decade, almost every industry has undergone a fundamental shift toward digital systems. In finance especially, data has become one of the most important assets of an organization. Transactions, market data, customer interactions, risk metrics, regulatory information, financial statements, and operational events are increasingly generated, stored, and processed digitally.
 
@@ -12,7 +12,7 @@ The real challenge is building the infrastructure, pipelines, processes, and dat
 
 This repository is my practical learning journey through Data Engineering, based on the concepts, case studies, and hands-on exercises covered throughout the course. While the course provides the foundational principles, I will use this repository to explore how those principles can be applied to financial data and finance-related use cases.
 
-Why Data Engineering?
+# Why Data Engineering?
 
 One of the key ideas introduced in this course is that data engineering provides the foundation upon which analytics, machine learning, and AI systems are built.
 
@@ -72,7 +72,7 @@ Market Data / Transactions / Financial APIs
 
 The objective is not to force every concept into a financial application, but to use finance as a practical perspective for understanding why the engineering decisions matter.
 
-Data-Centric Thinking
+# Data-Centric Thinking
 
 Another important theme introduced at the beginning of the course is the idea of taking a data-centric approach to AI and machine learning.
 
