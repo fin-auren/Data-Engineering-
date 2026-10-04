@@ -12595,3 +12595,515 @@ Transform
  This leads to the next stage of the data engineering lifecycle:
 
  **Serving Data for Downstream Use Cases.**
+## Data Engineering Undercurrents
+
+ The data engineering lifecycle is not just about moving data through a sequence of stages.
+
+ The lifecycle we have seen so far can be summarized as:
+
+```
+Source Systems
+      ↓
+   Ingestion
+      ↓
+   Storage
+      ↓
+Transformation
+      ↓
+    Serving
+      ↓
+Downstream Users
+```
+
+ However, modern data engineering involves much more than the tools used to implement these stages.
+
+ As the field has matured, data engineers have increasingly moved **up the value chain**. The role now includes practices such as security, data management, cost optimization, operational reliability, architecture, and software engineering.
+
+ These practices apply across the entire data engineering lifecycle and influence how the systems are designed, built, and operated.
+
+---
+
+ ## From Technology-Focused to Value-Focused Data Engineering
+
+ A decade ago, data engineering was often heavily focused on the technology layer.
+
+ The primary questions might have been:
+
+ - Which database should we use?
+- Which processing framework should we use?
+- How should we build the pipeline?
+- Where should the data be stored?
+- How do we move data from A to B?
+
+ Modern data engineering has expanded beyond these questions.
+
+ The role increasingly involves understanding:
+
+ - How data should be managed
+- How systems should be secured
+- How pipelines should be monitored
+- How infrastructure costs should be controlled
+- How systems should be designed for reliability
+- How workflows should be orchestrated
+- How software engineering principles should be applied to data systems
+
+ This represents a shift from simply **building data pipelines** toward **building reliable data systems that create business value**.
+
+---
+
+ ## The Data Engineering Lifecycle
+
+ The lifecycle provides the main stages through which data moves:
+
+```
+Data Generation
+      ↓
+    Ingestion
+      ↓
+    Storage
+      ↓
+Transformation
+      ↓
+    Serving
+```
+
+ But these stages do not operate independently.
+
+ There are cross-cutting concerns that influence **every stage** of the lifecycle.
+
+ These are referred to as the **undercurrents of data engineering**.
+
+---
+
+ ## What Are Data Engineering Undercurrents?
+
+ I think of the undercurrents as the principles and practices that run underneath the entire data engineering lifecycle.
+
+ Instead of thinking about them as additional pipeline stages, it is better to think of them as **layers that affect every stage**.
+
+```
+                 Data Engineering Lifecycle
+ ┌─────────────────────────────────────────────────┐
+ │ Generation → Ingestion → Storage → Transform → Serve │
+ └─────────────────────────────────────────────────┘
+                       ↑
+              Cross-Cutting Practices
+                       │
+       ┌───────────────┼────────────────┐
+       │               │                │
+    Security      Data Management    Data Ops
+       │               │                │
+    Architecture   Orchestration   Software Engineering
+```
+
+ The major undercurrents introduced in this lecture are:
+
+ 1. **Security**
+2. **Data Management**
+3. **DataOps**
+4. **Data Architecture**
+5. **Orchestration**
+6. **Software Engineering**
+
+ These concepts will become increasingly important as the course progresses.
+
+---
+
+ ## 1\. Security
+
+ Security is not something that should be added at the end of a data pipeline.
+
+ It needs to be considered throughout the lifecycle.
+
+ For example:
+
+ - Who can access the source data?
+- Who can access the storage layer?
+- Who can modify the data?
+- Is sensitive data encrypted?
+- How are credentials managed?
+- How long should users retain access?
+- What happens when someone's access should be revoked?
+
+ This connects directly with the AWS **Shared Responsibility Model** discussed earlier.
+
+ As a data engineer, security becomes part of the architecture rather than simply an operational task.
+
+---
+
+ ## 2\. Data Management
+
+ Data management is concerned with how an organization manages its data as an important organizational asset.
+
+ This includes areas such as:
+
+ - Data quality
+- Data governance
+- Data ownership
+- Metadata
+- Data discovery
+- Data lineage
+- Data retention
+- Data accessibility
+
+ For example, having a pipeline that successfully moves data from a database into a data warehouse does not necessarily mean that the resulting data is useful.
+
+ We also need to know:
+
+ > **What does this data mean, where did it come from, who owns it, and can we trust it?**
+
+ This becomes especially important in financial modelling.
+
+ A financial model might depend on fields such as:
+
+```
+revenue
+cost
+EBITDA
+net_income
+shares_outstanding
+debt
+cash
+```
+
+ But before using these fields, we need to understand their definitions.
+
+ For example, two datasets may both contain a field called `revenue`, while using different accounting definitions or reporting periods.
+
+ Therefore:
+
+```
+Data Management
+       ↓
+Understanding Meaning
+       ↓
+Data Quality & Governance
+       ↓
+Reliable Financial Analysis
+```
+
+---
+
+ ## 3\. DataOps
+
+ DataOps applies operational and engineering practices to data systems.
+
+ The objective is to make data systems:
+
+ - Reliable
+- Repeatable
+- Observable
+- Testable
+- Maintainable
+- Easier to deploy and operate
+
+ Instead of manually running a data pipeline and hoping that everything works, DataOps encourages automation and operational discipline.
+
+ For example:
+
+```
+Code Change
+    ↓
+Automated Tests
+    ↓
+Pipeline Deployment
+    ↓
+Pipeline Execution
+    ↓
+Monitoring
+    ↓
+Alerts
+```
+
+ This becomes particularly important when financial models depend on regularly updated data.
+
+ A valuation model that works perfectly on your laptop is not necessarily a reliable production system.
+
+---
+
+ ## 4\. Data Architecture
+
+ Data architecture concerns how the different components of a data system fit together.
+
+ It answers questions such as:
+
+ - Where should data be stored?
+- How should data flow through the system?
+- Which systems should communicate with each other?
+- Which workloads should be batch versus streaming?
+- How should the architecture scale?
+- How should reliability be achieved?
+- What are the cost implications of different design choices?
+
+ This connects directly to the earlier principle:
+
+```
+Business Need
+      ↓
+Requirements
+      ↓
+Architecture
+      ↓
+Technology
+      ↓
+Implementation
+```
+
+ Architecture should therefore be driven by requirements rather than by simply choosing technologies that happen to be popular.
+
+---
+
+ ## 5\. Orchestration
+
+ Data engineering systems often contain many different tasks.
+
+ For example:
+
+```
+Extract Market Data
+        ↓
+Validate Data
+        ↓
+Store Raw Data
+        ↓
+Transform Data
+        ↓
+Calculate Metrics
+        ↓
+Update Warehouse
+        ↓
+Refresh Financial Model
+```
+
+ Someone or something needs to coordinate these tasks.
+
+ This is where **orchestration** becomes important.
+
+ An orchestration system can help manage:
+
+ - Task dependencies
+- Scheduling
+- Retries
+- Failures
+- Monitoring
+- Execution order
+- Workflow status
+
+ Instead of manually running each step, we can define the workflow and allow an orchestration system to manage it.
+
+---
+
+ ## 6\. Software Engineering
+
+ Modern data engineering is also increasingly connected to software engineering.
+
+ Data pipelines are software systems.
+
+ Therefore, data engineers benefit from practices such as:
+
+ - Version control
+- Testing
+- Modular code
+- Documentation
+- Code review
+- CI/CD
+- Error handling
+- Logging
+- Reusable components
+
+ This is particularly relevant to my approach of building financial modelling projects.
+
+ If I create a financial data pipeline that downloads market data, transforms it, calculates financial metrics, and feeds a model, I should treat that pipeline as **production software**, rather than simply as a collection of notebooks.
+
+ For example:
+
+```
+Raw Data
+   ↓
+Python / SQL Code
+   ↓
+Tests
+   ↓
+Transformation
+   ↓
+Validated Dataset
+   ↓
+Financial Model
+```
+
+ The goal is not merely:
+
+ > "The code runs."
+
+ The better goal is:
+
+ > **"The system is reliable, reproducible, testable, and understandable."**
+
+---
+
+ ## My Perspective: Applying the Undercurrents to Financial Modelling
+
+ This is where I see a strong connection between data engineering and financial modelling.
+
+ A financial model is ultimately dependent on data.
+
+ For example, consider a simple valuation workflow:
+
+```
+Financial Statements
+        +
+Market Data
+        +
+Company Information
+        ↓
+     Ingestion
+        ↓
+      Storage
+        ↓
+ Data Cleaning & Validation
+        ↓
+ Financial Transformations
+        ↓
+ Financial Metrics
+        ↓
+ Valuation Model
+        ↓
+ Investment Analysis
+```
+
+ But the quality of the final model depends on much more than the transformation logic.
+
+ We also need to consider:
+
+ | Undercurrent | Financial Modelling Application |
+| --- | --- |
+| Security | Protect financial and sensitive company data |
+| Data Management | Define financial metrics and maintain data quality |
+| DataOps | Make model-data pipelines reliable and repeatable |
+| Data Architecture | Design how market and financial data flows through the system |
+| Orchestration | Schedule data updates and model refreshes |
+| Software Engineering | Version, test, document, and maintain modelling code |
+
+This makes the undercurrents particularly relevant to the financial-data projects I want to build.
+
+---
+
+ ## From Financial Model to Financial Data System
+
+ One important shift in my thinking is that I don't want to treat financial modelling as simply:
+
+```
+Excel / Python
+      ↓
+Financial Model
+      ↓
+Output
+```
+
+ Instead, I want to think about the complete data system behind the model:
+
+```
+External Sources
+       ↓
+    Ingestion
+       ↓
+   Raw Storage
+       ↓
+Data Validation
+       ↓
+Transformation
+       ↓
+Financial Data Model
+       ↓
+Financial Calculations
+       ↓
+Valuation / Risk / Analytics
+       ↓
+    End Users
+```
+
+ And running across all of these stages:
+
+```
+Security
+Data Management
+DataOps
+Architecture
+Orchestration
+Software Engineering
+```
+
+ This is a much more complete way of thinking about financial modelling.
+
+---
+
+ ## The Bigger Picture
+
+ The lifecycle tells us **what happens to data**.
+
+ The undercurrents tell us **how we should build and operate the systems that make it happen**.
+
+ So I can think about the two concepts together:
+
+```
+                 DATA ENGINEERING
+                       │
+        ┌──────────────┴──────────────┐
+        │                             │
+    Lifecycle                    Undercurrents
+        │                             │
+        ▼                             ▼
+ Generation                      Security
+ Ingestion                       Data Management
+ Storage                         DataOps
+ Transformation                  Architecture
+ Serving                         Orchestration
+                                  Software Engineering
+```
+
+ The combination is what turns a collection of data pipelines into a **reliable data platform**.
+
+---
+
+ ## Key Takeaway
+
+ The biggest takeaway from this lecture for me is that data engineering is no longer simply about moving data from one system to another.
+
+ The field is moving **up the value chain**.
+
+ A strong data engineer needs to understand not only how to build pipelines, but also:
+
+ - Why the system exists
+- Who depends on it
+- How the data should be managed
+- How the system should be secured
+- How it should be monitored
+- How it should scale
+- How it should be orchestrated
+- How the code should be maintained
+- How much the system costs
+- How reliable the resulting data is
+
+ For my financial modelling projects, this gives me a useful framework:
+
+```
+Business / Investment Question
+             ↓
+       Data Requirements
+             ↓
+      Data Architecture
+             ↓
+         Lifecycle
+             ↓
+        Undercurrents
+             ↓
+     Reliable Financial Data
+             ↓
+       Financial Models
+             ↓
+    Decision / Investment Insight
+```
+
+ The goal is therefore not just to **build a financial model**.
+
+ It is to build the **data engineering system that can reliably feed, maintain, validate, and support financial models**.
