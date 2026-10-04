@@ -4367,3 +4367,1067 @@ How can the system scale reliably?
  This brings the technical infrastructure back to the original purpose:
 
  > **Turning data into reliable information that can support financial analysis, modelling, and decision-making.**
+
+ ## Core AWS Services for Data Engineering
+
+ The services are organized into five broad categories:
+
+ - Compute
+- Networking
+- Storage
+- Databases
+- Security
+
+ The important thing for me is not to memorize these services individually.
+
+ Instead, I want to understand **what capability each service provides and where it fits into a larger data architecture**.
+
+---
+
+ ## The Five Core AWS Categories
+
+ A simplified view of the AWS services introduced in this lecture is:
+
+```
+                    AWS Cloud
+                        │
+        ┌───────────────┼───────────────┐
+        ↓               ↓               ↓
+     Compute         Network         Storage
+        │               │               │
+       EC2             VPC              S3
+     Lambda                            EBS
+     ECS/EKS                            EFS
+        │
+        └───────────────┬───────────────┘
+                        ↓
+                    Databases
+                        │
+                       RDS
+                    Redshift
+                        │
+                        ↓
+                    Security
+                        │
+              Shared Responsibility
+```
+
+ These categories provide a useful mental model for understanding how different AWS services contribute to a complete system.
+
+---
+
+ ## Compute — Where Processing Happens
+
+ The first category is **compute**.
+
+ Compute resources provide the environment where code executes.
+
+ The main service introduced in this lecture is **Amazon Elastic Compute Cloud (EC2)**.
+
+ EC2 provides virtual machines, or VMs, in the AWS Cloud.
+
+ A virtual machine can be thought of as a virtual computer or server.
+
+```
+EC2 Instance
+     │
+     ├── Operating System
+     │
+     ├── Applications
+     │
+     ├── Libraries
+     │
+     └── Data Processing
+```
+
+ When I create an EC2 instance, I have significant control over the environment.
+
+ I can control:
+
+ - The operating system
+- Installed applications
+- Software dependencies
+- Networking configuration
+- Processing workloads
+- Other aspects of the virtual machine
+
+ This makes EC2 a very flexible compute option.
+
+---
+
+ ## EC2 in Data Engineering
+
+ An EC2 instance can be used for many different workloads.
+
+ For example:
+
+ - Development environments
+- Web servers
+- Data-processing applications
+- Container workloads
+- Machine-learning workloads
+- Custom data pipelines
+
+ A data engineer could potentially use EC2 to run a Python-based financial-data processing application.
+
+```
+Financial Data
+      ↓
+EC2 Instance
+      ↓
+Python Processing
+      ↓
+Validation / Transformation
+      ↓
+Processed Data
+```
+
+ EC2 can also be deployed as a fleet of machines.
+
+ Instead of using one large machine, multiple instances can be used to distribute workloads.
+
+ This is known as **horizontal scaling**.
+
+```
+             Incoming Workload
+                    ↓
+          ┌─────────┼─────────┐
+          ↓         ↓         ↓
+        EC2-1     EC2-2     EC2-3
+          │         │         │
+          └─────────┼─────────┘
+                    ↓
+             Processed Data
+```
+
+ This becomes useful when data-processing workloads increase.
+
+---
+
+ ## Other Compute Options
+
+ EC2 is not the only way to perform computation on AWS.
+
+ The lecture also introduces:
+
+ - **AWS Lambda**
+- **Amazon Elastic Container Service (ECS)**
+- **Amazon Elastic Kubernetes Service (EKS)**
+
+ These services represent different approaches to running applications.
+
+ ### AWS Lambda
+
+ Lambda provides a serverless execution model.
+
+ Instead of managing a virtual machine directly, I can deploy code that executes in response to an event or trigger.
+
+```
+Event
+  ↓
+Lambda Function
+  ↓
+Processing
+  ↓
+Output
+```
+
+ This can be useful for event-driven data processing.
+
+ For example:
+
+```
+New Financial File
+        ↓
+S3 Event
+        ↓
+Lambda
+        ↓
+Validate File
+        ↓
+Trigger Pipeline
+```
+
+ This architecture can be useful when processing tasks need to happen automatically when new data arrives.
+
+---
+
+ ## Containers: ECS and EKS
+
+ The lecture also introduces container-based compute.
+
+ Containers provide a way to package an application together with its dependencies so that it can run consistently across environments.
+
+ AWS provides services such as:
+
+ - Amazon ECS
+- Amazon EKS
+
+ These can be useful when data-processing applications become more complex and need containerized deployment.
+
+ For example, a financial modelling application could be packaged into a container:
+
+```
+Financial Model
+      +
+Python
+      +
+Libraries
+      +
+Dependencies
+      ↓
+   Container
+      ↓
+ AWS Compute
+```
+
+ This provides another level of abstraction between the application and the underlying infrastructure.
+
+---
+
+ ## Networking — Amazon VPC
+
+ Whenever I create an EC2 instance or many other AWS resources, those resources need to exist within a network.
+
+ AWS provides **Amazon Virtual Private Cloud (VPC)** for this purpose.
+
+ A VPC is essentially a private network within AWS that I can configure and control.
+
+```
+AWS Region
+│
+└── VPC
+     │
+     ├── Subnet
+     │    ├── EC2
+     │    └── Database
+     │
+     └── Subnet
+          ├── Application
+          └── Processing
+```
+
+ A VPC allows me to control how resources communicate with each other and with external systems.
+
+---
+
+ ## Subnets
+
+ A VPC can be divided into smaller networks called **subnets**.
+
+ This allows different resources to be organized into different parts of the network.
+
+ For example:
+
+```
+VPC
+│
+├── Public Subnet
+│      └── Application
+│
+└── Private Subnet
+       ├── Database
+       └── Processing
+```
+
+ This type of network segmentation becomes particularly important for systems handling sensitive financial information.
+
+ I would not necessarily want every component of a financial data platform to be directly accessible from the public internet.
+
+---
+
+ ## Regions and Data Residency
+
+ One important concept from this lecture is that many AWS resources are **region-bound**.
+
+ A VPC exists within a particular AWS Region.
+
+ Therefore:
+
+```
+Region: Mumbai
+       │
+       └── VPC
+            ├── Subnet
+            ├── EC2
+            └── Database
+```
+
+ If I want to operate in another region, I generally need to create the required infrastructure there as well.
+
+ Data and resources do not automatically move between regions.
+
+ This has an important implication for financial systems.
+
+ Data location can matter because organizations may have requirements related to:
+
+ - Data residency
+- Compliance
+- Privacy
+- Regulatory requirements
+- Security
+- Latency
+
+ Therefore, choosing an AWS Region is not simply a technical decision.
+
+ It can become a **business and regulatory decision**.
+
+---
+
+ # Storage
+
+ The next major category is **storage**.
+
+ AWS provides different storage models for different requirements.
+
+ The lecture introduces three important types:
+
+ - Object storage
+- Block storage
+- File storage
+
+ These are different abstractions for storing data.
+
+---
+
+ ## Object Storage
+
+ Object storage is designed for storing objects such as:
+
+ - Documents
+- Logs
+- Images
+- Videos
+- Data files
+- Raw datasets
+
+ AWS's primary object-storage service is **Amazon S3**.
+
+ S3 is particularly important for data engineering because it can serve as the foundation of a data lake.
+
+```
+                 Amazon S3
+                     │
+       ┌─────────────┼─────────────┐
+       ↓             ↓             ↓
+    Raw Data     Processed Data   Logs
+       │             │
+       ↓             ↓
+   Historical     Analytics
+     Data            Data
+```
+
+ For my financial-data projects, S3 could potentially store:
+
+ - Historical stock prices
+- Intraday market data
+- Financial statements
+- Economic datasets
+- Transaction files
+- Model outputs
+- Raw API responses
+
+ This makes object storage particularly useful for maintaining a centralized historical data layer.
+
+---
+
+ ## Block Storage
+
+ Block storage works differently from object storage.
+
+ It is commonly used where low latency and high performance are important.
+
+ AWS provides **Amazon Elastic Block Store (EBS)** volumes that can be attached to EC2 instances.
+
+```
+EC2 Instance
+     │
+     ↓
+EBS Volume
+     │
+     ↓
+Operating System / Applications
+```
+
+ From a financial-modelling perspective, block storage could be useful when a processing application running on EC2 needs high-performance storage.
+
+ For example:
+
+```
+EC2
+ │
+ ├── Python Application
+ │
+ ├── Financial Model
+ │
+ └── EBS
+       ↓
+  Local Processing Data
+```
+
+---
+
+ ## File Storage
+
+ The third storage model is **file storage**.
+
+ File storage organizes information into files and directories, similar to the filesystem on a personal computer.
+
+ AWS provides **Amazon Elastic File System (EFS)** as a managed file-storage service.
+
+ The important distinction is:
+
+```
+Object Storage
+       ↓
+Objects / Files
+
+Block Storage
+       ↓
+Disk-like storage
+
+File Storage
+       ↓
+Files + Directories
+```
+
+ Different storage models therefore solve different problems.
+
+---
+
+ # Databases
+
+ The next category is **databases**.
+
+ At first glance, databases might appear to be another form of storage.
+
+ However, databases provide additional functionality for working with structured data.
+
+ They provide capabilities such as:
+
+ - Querying
+- Indexing
+- Data organization
+- Transactions
+- Structured data management
+
+ This makes databases different from simply storing files.
+
+---
+
+ ## Relational Databases
+
+ A relational database stores structured data using tables.
+
+ For example, a financial dataset could look like:
+
+```
+Trades
+--------------------------------
+trade_id
+security_id
+trade_date
+quantity
+price
+portfolio_id
+```
+
+ Another table might contain security information:
+
+```
+Securities
+--------------------------------
+security_id
+ticker
+company_name
+sector
+currency
+```
+
+ These tables can be related to each other using keys.
+
+ This relational model is extremely important in financial systems because financial data is often highly structured.
+
+---
+
+ ## Amazon RDS
+
+ The lecture introduces **Amazon Relational Database Service (RDS)**.
+
+ RDS is a managed relational database service.
+
+ Instead of manually managing all of the underlying database infrastructure, AWS manages many of the operational components.
+
+ A simplified architecture is:
+
+```
+Application
+     ↓
+Amazon RDS
+     ↓
+Relational Database
+     ↓
+Structured Financial Data
+```
+
+ RDS could potentially be used for:
+
+ - Transactional financial applications
+- Reference data
+- User information
+- Portfolio metadata
+- Security master data
+- Application databases
+
+---
+
+ # Amazon Redshift
+
+ Another important service introduced is **Amazon Redshift**.
+
+ Redshift is a cloud data warehouse designed for analytical workloads.
+
+ This distinction is important.
+
+ A relational database might support operational applications, while a data warehouse is typically designed for analytics across large datasets.
+
+```
+Operational Systems
+        ↓
+      RDS
+        ↓
+   Data Pipeline
+        ↓
+    Redshift
+        ↓
+ Analytics / BI / Models
+```
+
+ In a financial environment, Redshift could potentially be used to analyze large amounts of:
+
+ - Historical market data
+- Trading activity
+- Portfolio performance
+- Risk data
+- Customer activity
+- Financial metrics
+
+ This gives me an important conceptual distinction:
+
+```
+RDS
+↓
+Operational / Structured Application Data
+
+Redshift
+↓
+Analytical / Data Warehouse Workloads
+```
+
+---
+
+ # Storage vs Database vs Data Warehouse
+
+ One of the useful lessons from this lecture is that not every piece of data should automatically go into a database.
+
+ Different layers serve different purposes.
+
+ A simplified architecture could be:
+
+```
+Raw Financial Data
+       ↓
+      S3
+       ↓
+Data Transformation
+       ↓
+   Redshift
+       ↓
+ Analytics
+       ↓
+Financial Models
+```
+
+ Meanwhile, operational information might be stored separately:
+
+```
+Financial Application
+       ↓
+      RDS
+       ↓
+Operational Data
+```
+
+ This distinction will become increasingly important as the course moves toward more complex architectures.
+
+---
+
+ # Security — The Shared Responsibility Model
+
+ The final category introduced in this lecture is **security**.
+
+ AWS follows what is called the **Shared Responsibility Model**.
+
+ The core idea is:
+
+ > **AWS is responsible for security of the cloud, while the customer is responsible for security in the cloud.**
+
+ This distinction is extremely important.
+
+ AWS is responsible for securing the underlying infrastructure.
+
+ The customer is responsible for securely configuring and using the services.
+
+---
+
+ ## The Apartment Building Analogy
+
+ The lecture uses an apartment building as an analogy.
+
+ Imagine that AWS operates a large apartment building.
+
+ The building owner is responsible for:
+
+ - The physical structure
+- Building infrastructure
+- Physical security
+- Core facilities
+
+ The tenant is responsible for:
+
+ - Locking their apartment
+- Controlling access
+- Protecting their belongings
+- Using the security features correctly
+
+ The same idea applies to AWS.
+
+```
+AWS Responsibility
+        ↓
+Physical Infrastructure
+        ↓
+Data Centers
+        ↓
+Networking Infrastructure
+        ↓
+Hypervisor
+        ↓
+Customer Responsibility
+        ↓
+Operating System
+        ↓
+Applications
+        ↓
+Network Configuration
+        ↓
+Data Access
+        ↓
+Encryption
+```
+
+ The exact boundary changes depending on the AWS service being used.
+
+---
+
+ # Shared Responsibility in EC2
+
+ EC2 provides a useful example.
+
+ AWS manages the underlying infrastructure, including:
+
+ - Physical hardware
+- Data centers
+- Facilities
+- Underlying infrastructure
+- Hypervisor layer
+
+ But once I create an EC2 instance, I become responsible for many aspects of the environment.
+
+ For example:
+
+ - Operating-system management
+- Software updates
+- Security patches
+- Network configuration
+- Firewall rules
+- Access control
+- Data protection
+- Encryption where required
+
+ Therefore:
+
+```
+AWS
+ ↓
+Secures the Cloud
+
+Customer
+ ↓
+Secures Resources Within the Cloud
+```
+
+ Security is therefore not something I can simply delegate to AWS.
+
+---
+
+ # My Perspective: Applying This to Financial Modelling
+
+ This lecture makes the connection between **financial modelling and cloud infrastructure** even clearer.
+
+ Suppose I want to build a financial modelling platform.
+
+ The system could contain:
+
+```
+Market Data APIs
+       ↓
+     Amazon S3
+       ↓
+Data Processing
+       ↓
+   Redshift
+       ↓
+Feature Engineering
+       ↓
+Financial Model
+       ↓
+Risk / Return Analysis
+```
+
+ But now security has to exist across the entire architecture.
+
+ For example:
+
+ - Who can access the raw market data?
+- Who can modify processed datasets?
+- Who can access portfolio information?
+- Which applications can access the database?
+- Which resources should be publicly accessible?
+- Which resources should remain inside private subnets?
+- How should sensitive data be encrypted?
+- How should credentials and permissions be managed?
+
+ These questions show that **data engineering is inseparable from security**.
+
+---
+
+ # Example: Financial Data Platform on AWS
+
+ I can now combine the services introduced in this lecture into a more concrete architecture.
+
+```
+                  Financial Data Sources
+                           │
+                           ▼
+                    Data Ingestion
+                           │
+                           ▼
+                    ┌────────────┐
+                    │    S3      │
+                    │ Raw Data   │
+                    └─────┬──────┘
+                          │
+                          ▼
+                    Data Processing
+                     EC2 / Lambda
+                          │
+                          ▼
+                    Curated Data
+                          │
+                          ▼
+                    ┌────────────┐
+                    │ Redshift   │
+                    │ Warehouse  │
+                    └─────┬──────┘
+                          │
+              ┌───────────┼───────────┐
+              ↓           ↓           ↓
+          Analytics    Modelling    Reporting
+              │           │           │
+              └───────────┼───────────┘
+                          ↓
+                  Financial Decisions
+```
+
+ Alongside this architecture:
+
+```
+VPC
+│
+├── Network Isolation
+├── Subnets
+├── Security Controls
+└── Resource Connectivity
+```
+
+ And across the entire system:
+
+```
+Security
+    ↓
+Identity
+    ↓
+Access Control
+    ↓
+Encryption
+    ↓
+Network Security
+    ↓
+Data Protection
+```
+
+ This is beginning to look much more like a real financial data platform than simply a collection of AWS services.
+
+---
+
+ # Choosing the Right AWS Service
+
+ Another important lesson from this lecture is that there is no single AWS service that solves every problem.
+
+ The appropriate service depends on the requirement.
+
+ For example:
+
+ | Requirement | Possible AWS Service |
+| --- | --- |
+| Virtual machine | EC2 |
+| Event-driven code | Lambda |
+| Container workloads | ECS / EKS |
+| Object storage | S3 |
+| VM-attached storage | EBS |
+| Shared file storage | EFS |
+| Relational database | RDS |
+| Analytical warehouse | Redshift |
+| Private cloud network | VPC |
+
+This is why I should avoid thinking:
+
+ > "I need to learn AWS."
+
+ Instead, I should think:
+
+ > **"I need to understand which AWS capability solves which system requirement."**
+
+---
+
+ # Connecting This Lecture to the Data Engineering Lifecycle
+
+ The previous lectures introduced the importance of starting with business and stakeholder requirements.
+
+ This lecture shows how those requirements eventually translate into concrete cloud services.
+
+```
+Business Requirement
+        ↓
+Data Requirement
+        ↓
+System Requirement
+        ↓
+Architecture
+        ↓
+AWS Service Selection
+        ↓
+Implementation
+```
+
+ For example:
+
+ > "We need to store years of historical financial data and run analytical queries on it."
+
+ This might lead to:
+
+```
+Requirement
+    ↓
+Large-scale historical storage
+    ↓
+S3
+
+Requirement
+    ↓
+Analytical querying
+    ↓
+Redshift
+```
+
+ Another requirement:
+
+ > "We need an application database for structured portfolio information."
+
+ Could lead to:
+
+```
+Requirement
+    ↓
+Relational operational database
+    ↓
+RDS
+```
+
+ Another:
+
+ > "We need a private environment for processing sensitive data."
+
+ Could lead to:
+
+```
+Requirement
+    ↓
+Network isolation
+    ↓
+VPC + Subnets + Security Controls
+```
+
+ This demonstrates the importance of requirements-driven architecture.
+
+---
+
+ # The Bigger Picture
+
+ I am beginning to see AWS not as a collection of unrelated products, but as a set of infrastructure building blocks.
+
+```
+                    AWS
+                     │
+      ┌──────────────┼──────────────┐
+      ↓              ↓              ↓
+   Compute         Storage        Network
+      │              │              │
+   EC2/Lambda       S3/EBS/EFS      VPC
+      │              │              │
+      └──────────────┼──────────────┘
+                     ↓
+                  Databases
+                     │
+                  RDS/Redshift
+                     ↓
+                  Data Platform
+                     ↓
+             Financial Analytics
+                     ↓
+              Financial Models
+                     ↓
+              Business Decisions
+```
+
+ The services themselves are not the final objective.
+
+ They provide the infrastructure required to build reliable systems.
+
+---
+
+ # What I Want to Remember
+
+ The most important concepts I want to retain from this lecture are:
+
+ - EC2 provides virtual machines for flexible compute workloads.
+- Lambda provides serverless, event-driven computation.
+- ECS and EKS provide container-based compute options.
+- VPC provides private networking within AWS.
+- Subnets allow networks to be segmented.
+- AWS resources are often region-bound.
+- Region selection can matter for compliance, security, latency, and data residency.
+- S3 provides object storage and is particularly important for data engineering.
+- EBS provides block storage that can be attached to EC2.
+- EFS provides managed file storage.
+- RDS provides managed relational databases.
+- Redshift provides a cloud data warehouse for analytical workloads.
+- AWS follows the Shared Responsibility Model for security.
+- AWS secures the underlying cloud infrastructure.
+- Customers are responsible for securely configuring and using their AWS resources.
+- AWS services should be selected based on requirements rather than familiarity or popularity.
+
+---
+
+ # My Financial Engineering Mental Model
+
+ After these AWS lectures, I want to maintain the following mental model for my financial-data projects:
+
+```
+                 BUSINESS PROBLEM
+                        ↓
+              Stakeholder Requirements
+                        ↓
+                 Data Requirements
+                        ↓
+                System Requirements
+                        ↓
+                    ARCHITECTURE
+                        ↓
+          ┌─────────────┼─────────────┐
+          ↓             ↓             ↓
+       Compute       Storage       Networking
+          ↓             ↓             ↓
+     EC2/Lambda        S3            VPC
+          │             │             │
+          └─────────────┼─────────────┘
+                        ↓
+                    Databases
+                        ↓
+                   RDS / Redshift
+                        ↓
+                 Data Processing
+                        ↓
+                Financial Features
+                        ↓
+                Financial Models
+                        ↓
+              Risk / Return Analysis
+                        ↓
+                 Business Decisions
+```
+
+ And across every layer:
+
+```
+                SECURITY
+                   │
+        ┌──────────┼──────────┐
+        ↓          ↓          ↓
+     Access     Network    Encryption
+     Control    Security    & Data
+                           Protection
+```
+
+ This gives me a more complete understanding of what it means to build a financial data system.
+
+ I am not simply learning **AWS services**.
+
+ I am learning how to use cloud infrastructure to turn raw financial data into **reliable, secure, scalable, and usable data products** that can eventually support financial modelling and decision-making.
+
+---
+
+ ## From Learning Services to Designing Systems
+
+ The progression across these lectures is becoming clearer.
+
+ The first lectures focused on understanding the **problem and requirements**.
+
+ The previous AWS lecture introduced the **cloud infrastructure model**.
+
+ This lecture introduces the **specific building blocks** available within that infrastructure.
+
+ So the progression is:
+
+```
+Understand the Problem
+        ↓
+Understand Requirements
+        ↓
+Understand Cloud Infrastructure
+        ↓
+Understand AWS Services
+        ↓
+Combine Services into Architecture
+        ↓
+Build Data Pipelines
+        ↓
+Create Reliable Data
+        ↓
+Apply Financial Models
+```
+
+ The next step in my learning should therefore not be simply memorizing more AWS services.
+
+ It should be learning how these services are **combined into real data-engineering architectures and pipelines**.
