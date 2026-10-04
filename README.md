@@ -5431,3 +5431,998 @@ Apply Financial Models
  The next step in my learning should therefore not be simply memorizing more AWS services.
 
  It should be learning how these services are **combined into real data-engineering architectures and pipelines**.
+
+ ## Networking — VPC, IP Addresses & Subnets
+
+ Networking is another fundamental building block of cloud infrastructure.
+
+ In the previous lectures, I learned that a data system is usually composed of multiple resources:
+
+ - Compute
+- Storage
+- Databases
+- Processing systems
+- Applications
+- External data sources
+
+ These resources need to communicate with each other.
+
+ For example:
+
+```
+Data Source
+    ↓
+Ingestion
+    ↓
+Processing
+    ↓
+Storage
+    ↓
+Database
+    ↓
+Financial Model
+```
+
+ All of these components require some form of network communication.
+
+ This lecture therefore introduces some of the fundamental concepts behind cloud networking:
+
+ - Networks
+- IP addresses
+- IPv4
+- CIDR notation
+- Virtual Private Cloud (VPC)
+- Subnets
+- Public and private resources
+
+---
+
+ ## What Is a Network?
+
+ At the simplest level, a network is a collection of devices that can communicate with each other.
+
+ Communication generally happens through requests and responses.
+
+```
+Device A
+   │
+   │ Request
+   ↓
+Device B
+   │
+   │ Response
+   ↓
+Device A
+```
+
+ In a cloud environment, the devices are not necessarily physical computers sitting next to each other.
+
+ They can be:
+
+ - Virtual machines
+- Databases
+- Applications
+- Storage systems
+- Containers
+- Cloud services
+
+ The network provides the communication layer connecting these components.
+
+---
+
+ ## Why Networking Matters in Data Engineering
+
+ A data pipeline rarely consists of a single component.
+
+ Consider a financial data pipeline:
+
+```
+Market Data API
+      ↓
+Ingestion Service
+      ↓
+Processing
+      ↓
+Storage
+      ↓
+Database
+      ↓
+Financial Model
+```
+
+ Each component may need to communicate with another component.
+
+ For example:
+
+```
+EC2
+ ↓
+Database
+
+Application
+ ↓
+API
+
+Processing
+ ↓
+S3
+
+Analytics
+ ↓
+Data Warehouse
+```
+
+ Therefore, networking determines **who can communicate with whom and how that communication happens**.
+
+ This makes networking both a technical and security concern.
+
+---
+
+ # IP Addresses
+
+ To communicate across a network, devices need an address.
+
+ This is where an **IP address** comes in.
+
+ An IP address is used to identify a device within a network.
+
+ A simplified example is:
+
+```
+192.101.0.2
+```
+
+ The purpose is similar to an address in the physical world.
+
+ If I want to send something to a particular house, I need an address.
+
+ Similarly, if one device wants to communicate with another device, it needs to know where that device is located on the network.
+
+```
+Device A
+192.101.0.1
+      │
+      │ Request
+      ↓
+Device B
+192.101.0.2
+```
+
+ The network uses these addresses to route communication to the appropriate destination.
+
+---
+
+ ## IPv4 Addresses
+
+ One of the most common versions of the Internet Protocol is **IPv4**.
+
+ IPv4 addresses are represented using four numbers separated by dots:
+
+```
+x.x.x.x
+```
+
+ Each section can contain a value between:
+
+```
+0 → 255
+```
+
+ For example:
+
+```
+192.101.0.2
+```
+
+ is a valid IPv4 address.
+
+ Technically, an IPv4 address is a **32-bit number**.
+
+```
+32 bits
+   ↓
+8 bits . 8 bits . 8 bits . 8 bits
+   ↓
+192 . 101 . 0 . 2
+```
+
+ Understanding IPv4 is useful because cloud networking requires us to define ranges of IP addresses for our networks.
+
+---
+
+ # CIDR Notation
+
+ One of the concepts introduced in this lecture that initially looks confusing is **CIDR — Classless Inter-Domain Routing**.
+
+ CIDR notation provides a way to describe a **range of IP addresses**.
+
+ For example:
+
+```
+192.101.0.0/24
+```
+
+ The `/24` indicates that the first 24 bits are fixed.
+
+ Since IPv4 contains 32 bits:
+
+```
+32 - 24 = 8
+```
+
+ This leaves 8 bits available for addresses within the range.
+
+ Therefore:
+
+```
+192.101.0.0/24
+```
+
+ represents the range:
+
+```
+192.101.0.0
+       ↓
+192.101.0.255
+```
+
+ This gives us 256 possible addresses in the theoretical address range.
+
+---
+
+ ## Why CIDR Matters
+
+ CIDR becomes important when designing a cloud network because I need to decide:
+
+ > **How many IP addresses should my network be able to contain?**
+
+ For example, I might create a VPC using:
+
+```
+10.0.0.0/16
+```
+
+ and then divide that larger network into smaller networks.
+
+```
+10.0.0.0/16
+      │
+      ├── 10.0.1.0/24
+      ├── 10.0.2.0/24
+      ├── 10.0.3.0/24
+      └── ...
+```
+
+ This gives me a way to organize and allocate IP addresses efficiently.
+
+---
+
+ # What Is a VPC?
+
+ A **Virtual Private Cloud (VPC)** is an isolated private network within AWS.
+
+ It provides the network environment in which I can launch and organize AWS resources.
+
+ A useful mental model is to think of a VPC as a **protected network boundary** around my cloud resources.
+
+```
+                 AWS Region
+                     │
+              ┌──────────────┐
+              │     VPC      │
+              │              │
+              │   EC2        │
+              │   Database   │
+              │   Processing │
+              │   Storage    │
+              │              │
+              └──────────────┘
+```
+
+ The VPC allows me to define how resources communicate with each other and how they interact with external networks.
+
+---
+
+ ## VPC and AWS Regions
+
+ A VPC exists within a particular AWS Region.
+
+ For example:
+
+```
+AWS Region
+│
+└── VPC
+    │
+    ├── Availability Zone A
+    ├── Availability Zone B
+    └── Availability Zone C
+```
+
+ A VPC can span multiple Availability Zones within the same Region.
+
+ However, it does not span multiple AWS Regions.
+
+ If I want a network in another Region, I would create a separate VPC there.
+
+ This connects directly to the previous lecture's discussion of AWS Regions and data residency.
+
+---
+
+ # VPC as a Network Boundary
+
+ One of the most useful ways I understand a VPC is as a **network boundary**.
+
+ Imagine a financial-data platform containing:
+
+```
+Financial Data Platform
+│
+├── Data Processing
+├── Database
+├── Data Warehouse
+├── Applications
+└── Financial Models
+```
+
+ I don't necessarily want all of these resources to be directly exposed to the public internet.
+
+ Instead, I can place them inside a VPC and control how traffic flows.
+
+```
+                    Internet
+                       │
+                       X
+                       │
+                ┌──────────────┐
+                │     VPC      │
+                │              │
+                │  Resources   │
+                │              │
+                └──────────────┘
+```
+
+ The VPC therefore provides an important layer of isolation.
+
+---
+
+ # VPC CIDR Block
+
+ When creating a VPC, I need to define its IP address range.
+
+ This is done using a **CIDR block**.
+
+ For example:
+
+```
+VPC CIDR
+10.0.0.0/16
+```
+
+ This defines the overall IP address space available inside the VPC.
+
+ Resources created within the VPC can then receive IP addresses from this range.
+
+```
+VPC
+10.0.0.0/16
+      │
+      ├── Resource → 10.0.x.x
+      ├── Resource → 10.0.x.x
+      └── Resource → 10.0.x.x
+```
+
+ The VPC CIDR therefore defines the size of the network.
+
+---
+
+ # What Is a Subnet?
+
+ A VPC can be divided into smaller networks called **subnets**.
+
+ I can think of a subnet as a smaller network inside the larger VPC.
+
+```
+VPC
+│
+├── Subnet A
+│
+├── Subnet B
+│
+└── Subnet C
+```
+
+ Each subnet receives its own CIDR block.
+
+ The subnet CIDR must be a subset of the VPC's CIDR range.
+
+ For example:
+
+```
+VPC
+10.0.0.0/16
+│
+├── Subnet A
+│   10.0.1.0/24
+│
+├── Subnet B
+│   10.0.2.0/24
+│
+└── Subnet C
+    10.0.3.0/24
+```
+
+ This allows me to divide the larger network into logical sections.
+
+---
+
+ # Why Use Subnets?
+
+ The main reason to use subnets is to provide **more granular control over resources and network access**.
+
+ Not every resource in a system needs the same level of exposure.
+
+ For example:
+
+```
+                    VPC
+                     │
+           ┌─────────┴─────────┐
+           ↓                   ↓
+     Public Subnet        Private Subnet
+           │                   │
+           ↓                   ↓
+      Application          Database
+                              │
+                              ↓
+                         Financial Data
+```
+
+ The application might need to communicate with the outside world.
+
+ The database might not need direct public access.
+
+ This separation improves the architecture and provides an additional layer of security.
+
+---
+
+ # Public vs Private Subnets
+
+ A simplified way to think about the two types is:
+
+ ### Public Subnet
+
+ A public subnet can contain resources that need connectivity to the outside world.
+
+ For example:
+
+```
+Internet
+   ↓
+Public Subnet
+   ↓
+Application
+```
+
+ ### Private Subnet
+
+ A private subnet is used for resources that should not be directly accessible from the public internet.
+
+ For example:
+
+```
+Public Application
+       ↓
+Private Subnet
+       ↓
+Database
+```
+
+ This creates a useful separation between externally accessible components and internal components.
+
+---
+
+ # Financial Data Example
+
+ This distinction becomes particularly important when thinking about financial systems.
+
+ Imagine a portfolio-management application.
+
+ I might have:
+
+```
+                Internet
+                   │
+                   ↓
+             Public Subnet
+                   │
+              Application
+                   │
+                   ↓
+            Private Subnet
+                   │
+                Database
+                   │
+                   ↓
+             Financial Data
+```
+
+ The application needs to receive requests from users.
+
+ However, the underlying portfolio database does not necessarily need to be exposed directly to the internet.
+
+ Therefore, separating these components into different network areas reduces unnecessary exposure.
+
+---
+
+ # Subnets and Availability Zones
+
+ Subnets are associated with Availability Zones.
+
+ A simplified architecture could look like:
+
+```
+AWS Region
+│
+└── VPC
+     │
+     ├── Availability Zone A
+     │      └── Subnet A
+     │
+     └── Availability Zone B
+            └── Subnet B
+```
+
+ This allows resources to be distributed across Availability Zones.
+
+ For example:
+
+```
+                 VPC
+                  │
+        ┌─────────┴─────────┐
+        ↓                   ↓
+       AZ-A                AZ-B
+        │                   │
+   Private Subnet       Private Subnet
+        │                   │
+    Database A          Database B
+```
+
+ This type of architecture can help support availability and resilience.
+
+---
+
+ # Resources Within the Same VPC
+
+ Resources placed within the same VPC can communicate with each other when the appropriate network configuration allows it.
+
+ For example:
+
+```
+VPC
+│
+├── EC2
+│
+├── Database
+│
+└── Processing
+```
+
+ These components can form a private internal network for the application.
+
+ However, resources in different VPCs do not automatically communicate with each other.
+
+ Similarly, resources do not automatically become publicly accessible simply because they exist in AWS.
+
+ Network connectivity needs to be intentionally configured.
+
+---
+
+ # My Perspective: Applying VPCs to Financial Modelling
+
+ This is where I see networking becoming particularly relevant to my financial-modelling projects.
+
+ Suppose I eventually build a financial modelling platform with several components:
+
+```
+Market Data
+     ↓
+Data Ingestion
+     ↓
+Processing
+     ↓
+Data Warehouse
+     ↓
+Feature Engineering
+     ↓
+Financial Model
+     ↓
+Results
+```
+
+ These components should not necessarily all have the same network access.
+
+ A possible architecture could be:
+
+```
+                         Internet
+                            │
+                            ↓
+                    ┌───────────────┐
+                    │ Public Subnet │
+                    │               │
+                    │ Data/API App  │
+                    └───────┬───────┘
+                            │
+                            ↓
+                    ┌───────────────┐
+                    │ Private       │
+                    │ Subnet        │
+                    │               │
+                    │ Processing    │
+                    │ Database      │
+                    │ Models        │
+                    └───────────────┘
+```
+
+ The principle is:
+
+ > **Expose only what needs to be exposed. Keep internal systems private whenever possible.**
+
+ This is especially important when working with financial information.
+
+---
+
+ # Example: Portfolio Analytics Platform
+
+ Imagine that I build a portfolio analytics system.
+
+ It contains:
+
+ - Market-data ingestion
+- Portfolio database
+- Historical data
+- Risk calculations
+- Financial models
+- User-facing application
+
+ I could conceptually organize these components as:
+
+```
+                         Users
+                           │
+                           ↓
+                    Public Interface
+                           │
+                           ↓
+                    Application Layer
+                           │
+                           ↓
+                    Private Network
+                           │
+              ┌────────────┼────────────┐
+              ↓            ↓            ↓
+          Database     Processing     Models
+              │            │            │
+              └────────────┼────────────┘
+                           ↓
+                      Financial Data
+```
+
+ The VPC provides the overall network boundary.
+
+ Subnets provide additional segmentation within that boundary.
+
+---
+
+ # Networking as a Security Layer
+
+ Before this lecture, I mostly thought about security in terms of:
+
+ - Authentication
+- Authorization
+- Encryption
+- Access permissions
+
+ This lecture adds another important dimension:
+
+ > **Network architecture itself can be part of security.**
+
+ For example, I can reduce exposure by keeping a database inside a private subnet rather than placing it directly on the public internet.
+
+```
+Less controlled:
+
+Internet
+   ↓
+Database
+
+More controlled:
+
+Internet
+   ↓
+Application
+   ↓
+Private Network
+   ↓
+Database
+```
+
+ This does not replace authentication or encryption.
+
+ Instead, it adds another layer of defense.
+
+---
+
+ # Thinking in Layers
+
+ I find it useful to think about a cloud network as a hierarchy.
+
+```
+AWS Region
+     ↓
+VPC
+     ↓
+Subnets
+     ↓
+Resources
+     ↓
+Applications
+```
+
+ Each layer provides a different level of organization.
+
+ For example:
+
+ ### Region
+
+ Determines the geographical location of the infrastructure.
+
+ ### VPC
+
+ Defines the overall private network.
+
+ ### Subnet
+
+ Divides the VPC into smaller network segments.
+
+ ### Resource
+
+ Represents things such as EC2 instances or databases.
+
+ ### Application
+
+ Uses those resources to perform business functions.
+
+---
+
+ # CIDR as an Architecture Decision
+
+ CIDR notation may initially look like a technical detail, but it actually becomes an architectural decision.
+
+ When designing a VPC, I need to think about:
+
+ - How many resources will exist?
+- How many subnets will I need?
+- How much might the system grow?
+- Will different environments need separate networks?
+- Will I need multiple Availability Zones?
+- Will networks need to communicate with each other?
+
+ For example:
+
+```
+VPC
+10.0.0.0/16
+       │
+       ├── Production
+       │     ├── 10.0.1.0/24
+       │     └── 10.0.2.0/24
+       │
+       ├── Development
+       │     ├── 10.0.3.0/24
+       │     └── 10.0.4.0/24
+       │
+       └── Analytics
+             ├── 10.0.5.0/24
+             └── 10.0.6.0/24
+```
+
+ The exact design would depend on the requirements.
+
+ Again, this connects back to the core principle from the earlier lectures:
+
+```
+Requirements
+     ↓
+Architecture
+     ↓
+Network Design
+     ↓
+Implementation
+```
+
+---
+
+ # Connecting Networking to the Data Engineering Lifecycle
+
+ Networking may initially seem separate from data engineering.
+
+ But when I look at an actual data pipeline, the connection becomes clear.
+
+```
+Data Source
+    ↓
+Ingestion
+    ↓
+Processing
+    ↓
+Storage
+    ↓
+Warehouse
+    ↓
+Analytics
+    ↓
+Financial Model
+```
+
+ Every arrow represents some form of communication.
+
+ Therefore, I need to think about:
+
+```
+Who communicates with whom?
+          ↓
+Where are they located?
+          ↓
+Which network are they in?
+          ↓
+Should the communication be public or private?
+          ↓
+What access should be allowed?
+```
+
+ This makes networking an important part of data architecture.
+
+---
+
+ # A Simplified Financial Cloud Architecture
+
+ Bringing together the concepts from the previous AWS lectures, I can now imagine a financial-data platform like this:
+
+```
+                         Financial Data Sources
+                                  │
+                                  ↓
+                              Internet
+                                  │
+                                  ↓
+                         ┌────────────────┐
+                         │      VPC       │
+                         │                │
+                         │ Public Subnet  │
+                         │                │
+                         │ Data Ingestion │
+                         └───────┬────────┘
+                                 │
+                                 ↓
+                         Private Subnet
+                                 │
+                    ┌────────────┼────────────┐
+                    ↓            ↓            ↓
+                Processing     Database    Data Warehouse
+                    │            │            │
+                    └────────────┼────────────┘
+                                 ↓
+                         Financial Models
+                                 │
+                                 ↓
+                          Risk / Analytics
+```
+
+ This is still a conceptual architecture rather than a production design.
+
+ The important part is understanding **why the components are separated**.
+
+---
+
+ # What I Want to Remember
+
+ The key concepts from this reading are:
+
+ - A network allows devices and resources to communicate.
+- IP addresses identify devices within a network.
+- IPv4 addresses use 32 bits and are commonly represented as `x.x.x.x`.
+- CIDR notation represents a range of IP addresses.
+- A VPC is an isolated private network within an AWS Region.
+- A VPC can span multiple Availability Zones within the Region.
+- A VPC has a CIDR block defining its IP address space.
+- Subnets divide a VPC into smaller networks.
+- Each subnet has its own CIDR block.
+- Subnet CIDR ranges must fit within the VPC's CIDR range.
+- Public and private subnets can be used to separate resources based on their network-access requirements.
+- Resources within a VPC can communicate according to the configured networking rules.
+- Network architecture can be an important part of security.
+- Financial systems can benefit from keeping sensitive databases and processing resources in private network segments.
+
+---
+
+ # My Financial Engineering Mental Model
+
+ I want to connect networking to the larger financial-data architecture I am building in my head.
+
+```
+                    BUSINESS PROBLEM
+                           ↓
+                  Financial Requirements
+                           ↓
+                    Data Architecture
+                           ↓
+                  Cloud Infrastructure
+                           ↓
+                         VPC
+                           ↓
+                    ┌──────┴──────┐
+                    ↓             ↓
+              Public Subnet   Private Subnet
+                    ↓             ↓
+               Applications   Data / Processing
+                                  │
+                    ┌─────────────┼─────────────┐
+                    ↓             ↓             ↓
+                Database      Data Warehouse   Models
+                    │             │             │
+                    └─────────────┼─────────────┘
+                                  ↓
+                         Financial Analytics
+                                  ↓
+                         Business Decisions
+```
+
+ The key idea for me is:
+
+ > **A data architecture is not only about where data is stored and how it is processed. It is also about how the components communicate and which components are allowed to communicate with each other.**
+
+ This makes networking an important part of designing secure and reliable financial data systems.
+
+---
+
+ ## From Data Pipelines to Network Architecture
+
+ The previous lectures taught me to think about:
+
+```
+Problem
+   ↓
+Requirements
+   ↓
+Architecture
+   ↓
+AWS Services
+```
+
+ This lecture adds another layer:
+
+```
+Problem
+   ↓
+Requirements
+   ↓
+Architecture
+   ↓
+AWS Services
+   ↓
+Network Architecture
+   ↓
+VPC
+   ↓
+Subnets
+   ↓
+Resource Connectivity
+   ↓
+Secure Data Pipeline
+```
+
+ For my financial-modelling projects, I therefore want to think about networking as part of the architecture from the beginning, rather than something added after the data pipeline has already been built.
+
