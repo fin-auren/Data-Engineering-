@@ -6426,3 +6426,922 @@ Secure Data Pipeline
 
  For my financial-modelling projects, I therefore want to think about networking as part of the architecture from the beginning, rather than something added after the data pipeline has already been built.
 
+
+ ## Security — AWS Shared Responsibility Model
+
+
+ These concepts help answer questions such as:
+
+ - Where does my system run?
+- Where is my data stored?
+- How do different resources communicate?
+- Which resources should be public or private?
+
+ This lecture introduces another critical question:
+
+ > **Who is responsible for securing the system and the data?**
+
+ When applications and data are hosted in the cloud, the physical infrastructure is managed by the cloud provider.
+
+ However, moving to the cloud does **not** mean that security becomes entirely the cloud provider's responsibility.
+
+ AWS provides the infrastructure, but the customer still owns and controls the data and is responsible for securing how that data is used.
+
+ This is known as the **AWS Shared Responsibility Model**.
+
+---
+
+ ## The Core Idea
+
+ The model can be summarized very simply:
+
+```
+AWS
+ ↓
+Security OF the Cloud
+
+Customer
+ ↓
+Security IN the Cloud
+```
+
+ Or:
+
+ > **AWS secures the infrastructure. The customer secures what they put and configure within that infrastructure.**
+
+ This distinction is extremely important for data engineering.
+
+---
+
+ # Security of the Cloud
+
+ AWS is responsible for the security of the underlying cloud infrastructure.
+
+ This includes the physical and foundational components required to operate AWS services.
+
+ For example:
+
+ - Physical data centers
+- Physical servers
+- Storage hardware
+- Networking equipment
+- Physical facilities
+- Global infrastructure
+- Cables connecting regions
+- Hardware and software supporting AWS services
+
+ A simplified view is:
+
+```
+AWS Responsibility
+        │
+        ├── Physical Facilities
+        ├── Hardware
+        ├── Networking Infrastructure
+        ├── Global Infrastructure
+        └── AWS Service Infrastructure
+```
+
+ As a customer, I do not need to physically secure the AWS data center.
+
+ AWS takes responsibility for that layer.
+
+ This is one of the major benefits of cloud computing.
+
+---
+
+ # Security in the Cloud
+
+ The responsibility changes once I start using AWS resources.
+
+ I still own my data.
+
+ I am responsible for determining:
+
+ - Who can access the data
+- What they can do with the data
+- How long they can access it
+- How the data is protected
+- How the data moves between systems
+- How resources are configured
+- Which applications can access which datasets
+
+```
+Customer Responsibility
+        │
+        ├── Data
+        ├── Access
+        ├── Permissions
+        ├── Network Configuration
+        ├── Encryption
+        └── Application Security
+```
+
+ This means that simply putting data into AWS does not automatically make the data secure.
+
+ The customer still needs to configure the environment correctly.
+
+---
+
+ # The Apartment Building Analogy
+
+ A useful way to understand the Shared Responsibility Model is to think about an apartment building.
+
+ Imagine that AWS owns and operates a large apartment building.
+
+ The building owner is responsible for:
+
+ - The physical structure
+- Building security
+- Electricity
+- Physical access to the building
+- Maintaining the building itself
+
+ But the tenant is responsible for securing their own apartment.
+
+ For example:
+
+```
+Building Owner
+      ↓
+Secure Building
+      ↓
+Tenant
+      ↓
+Lock Apartment
+      ↓
+Protect Personal Belongings
+```
+
+ AWS works in a similar way.
+
+```
+AWS
+ ↓
+Secure Cloud Infrastructure
+ ↓
+Customer
+ ↓
+Secure Data & Resources
+```
+
+ Both sides have responsibilities.
+
+---
+
+ # Why This Matters for Data Engineering
+
+ This model is particularly important for data engineers because data pipelines often connect multiple systems.
+
+ Consider a simple pipeline:
+
+```
+Data Source
+     ↓
+Ingestion
+     ↓
+Storage
+     ↓
+Transformation
+     ↓
+Database
+     ↓
+Analytics
+```
+
+ Every stage potentially contains sensitive data.
+
+ Therefore, I need to think about security across the entire pipeline.
+
+ For example:
+
+ - Who can upload data?
+- Who can read raw data?
+- Who can modify processed data?
+- Which applications can access the database?
+- Which users can run the pipeline?
+- Can data be accessed from outside the network?
+- Is data encrypted?
+- How long should access remain available?
+
+ Security therefore becomes part of the **data architecture**, not just an operational afterthought.
+
+---
+
+ # Data Ownership and Control
+
+ One of the most important ideas from this reading is:
+
+ > **The cloud provider hosts the infrastructure, but the customer still owns and controls their data.**
+
+ This means I cannot assume:
+
+ > "My data is on AWS, therefore AWS is responsible for everything."
+
+ Instead, I need to understand exactly what AWS is responsible for and what I am responsible for.
+
+```
+AWS
+ ↓
+Provides Infrastructure
+ ↓
+I Configure the Infrastructure
+ ↓
+I Store My Data
+ ↓
+I Control Access
+ ↓
+I Protect the Data
+```
+
+ This distinction becomes especially important when the data has financial, personal, or regulatory significance.
+
+---
+
+ # Security of Data at Rest
+
+ Data can exist in different states.
+
+ One important state is **data at rest**.
+
+ Data at rest means data that is currently stored somewhere.
+
+ For example:
+
+```
+Financial Data
+     ↓
+S3
+```
+
+ or:
+
+```
+Financial Data
+     ↓
+Database
+```
+
+ The customer is responsible for ensuring that stored data is appropriately protected.
+
+ Encryption can be an important part of this protection.
+
+```
+Plain Data
+    ↓
+Encryption
+    ↓
+Encrypted Storage
+```
+
+ The exact security implementation depends on the system requirements and AWS service being used.
+
+---
+
+ # Security of Data in Transit
+
+ Data also moves between systems.
+
+ For example:
+
+```
+Market Data API
+       ↓
+Data Pipeline
+       ↓
+S3
+       ↓
+Processing
+       ↓
+Database
+```
+
+ Data moving between these components is considered **data in transit**.
+
+ Protecting data while it moves is therefore another important responsibility.
+
+ A simplified model is:
+
+```
+Data Source
+    │
+    │ Secure Communication
+    ↓
+Data Pipeline
+    │
+    │ Secure Communication
+    ↓
+Storage / Database
+```
+
+ This distinction gives me two important security questions:
+
+```
+Is my data secure while stored?
+        ↓
+Data at Rest
+
+Is my data secure while moving?
+        ↓
+Data in Transit
+```
+
+---
+
+ # Access Control
+
+ Another major responsibility is managing **who can access data and resources**.
+
+ Suppose I have a financial database containing portfolio information.
+
+ I may have several different users:
+
+```
+Portfolio Manager
+Data Analyst
+Data Engineer
+Data Scientist
+Application
+Administrator
+```
+
+ They should not necessarily have identical permissions.
+
+ For example:
+
+```
+Portfolio Manager
+       ↓
+Read Portfolio Data
+
+Data Engineer
+       ↓
+Build / Maintain Pipeline
+
+Data Scientist
+       ↓
+Read Curated Data
+
+Application
+       ↓
+Access Required Database Tables
+```
+
+ This leads to an important security principle:
+
+ > **Give users and applications only the access they actually need.**
+
+ This is commonly associated with the principle of **least privilege**.
+
+---
+
+ # Security and Data Pipelines
+
+ The Shared Responsibility Model becomes especially important when building cloud-based pipelines.
+
+ Consider:
+
+```
+External Data
+      ↓
+Ingestion
+      ↓
+S3
+      ↓
+Processing
+      ↓
+Data Warehouse
+      ↓
+Financial Model
+```
+
+ At each stage, I need to consider access.
+
+```
+Who can write?
+Who can read?
+Who can modify?
+Who can delete?
+Who can execute?
+```
+
+ For example:
+
+```
+Raw Data
+   │
+   ├── Ingestion → WRITE
+   │
+   ├── Processing → READ
+   │
+   └── Analyst → LIMITED READ
+```
+
+ Not every component should automatically receive full access to every dataset.
+
+---
+
+ # My Perspective: Applying This to Financial Modelling
+
+ This is where the Shared Responsibility Model becomes particularly important for my financial-data projects.
+
+ Imagine that I build a portfolio-risk modelling platform.
+
+ The platform might contain:
+
+```
+Market Data
+     ↓
+Raw Data
+     ↓
+Processing
+     ↓
+Curated Data
+     ↓
+Financial Model
+     ↓
+Risk Results
+```
+
+ Some of this information could be highly sensitive.
+
+ For example:
+
+ - Portfolio positions
+- Trading activity
+- Client information
+- Investment strategies
+- Risk calculations
+- Model outputs
+- Proprietary research
+
+ Therefore, I cannot treat security as something that comes after the data pipeline has been built.
+
+ Security needs to be considered from the beginning.
+
+```
+Financial Requirement
+        ↓
+Data Architecture
+        ↓
+Network Architecture
+        ↓
+Security Architecture
+        ↓
+Data Pipeline
+        ↓
+Financial Model
+```
+
+---
+
+ # Example: Portfolio Data Platform
+
+ Suppose I have a portfolio database.
+
+ A simplified architecture could be:
+
+```
+                       Users
+                         │
+                         ↓
+                  Application Layer
+                         │
+                         ↓
+                   Private Network
+                         │
+                         ↓
+                    Database
+                         │
+                         ↓
+                  Portfolio Data
+```
+
+ The security responsibilities might include:
+
+ - Controlling which users can access the application
+- Controlling which applications can access the database
+- Restricting network access
+- Protecting stored data
+- Protecting data during transmission
+- Managing permissions
+- Removing access when it is no longer required
+
+ The cloud provider secures the underlying infrastructure, but I still need to configure and operate my part of the system securely.
+
+---
+
+ # VPC + Security + Data
+
+ This also connects directly to the previous lecture about VPCs and subnets.
+
+ Previously, I learned that I can create:
+
+```
+VPC
+│
+├── Public Subnet
+│
+└── Private Subnet
+```
+
+ Now I can add security considerations:
+
+```
+                         Internet
+                            │
+                            ↓
+                     Public Subnet
+                            │
+                       Application
+                            │
+                            ↓
+                     Private Subnet
+                            │
+                     ┌──────┴──────┐
+                     ↓             ↓
+                  Database     Processing
+                     │             │
+                     └──────┬──────┘
+                            ↓
+                       Financial Data
+```
+
+ The network architecture helps reduce unnecessary exposure.
+
+ But networking alone is not enough.
+
+ I still need to control:
+
+ - Identity
+- Permissions
+- Data access
+- Encryption
+- Application access
+- Credentials
+- Configuration
+
+ This is why security should be viewed as a **layered approach**.
+
+---
+
+ # Security as Multiple Layers
+
+ I find it useful to think about financial-data security as several layers.
+
+```
+                 Security
+                     │
+       ┌─────────────┼─────────────┐
+       ↓             ↓             ↓
+    Identity       Network        Data
+       │             │             │
+   Permissions     VPC/Subnets   Encryption
+       │             │             │
+       └─────────────┼─────────────┘
+                     ↓
+                Applications
+                     ↓
+                  Pipelines
+                     ↓
+                    Data
+```
+
+ No single security mechanism is sufficient by itself.
+
+ A secure system combines multiple controls.
+
+---
+
+ # Security Is Part of the Architecture
+
+ One of the biggest lessons I take from this reading is that security should not be treated as something added at the end.
+
+ A common approach might be:
+
+```
+Build System
+     ↓
+Deploy System
+     ↓
+Think About Security
+```
+
+ A better approach is:
+
+```
+Understand Requirements
+        ↓
+Design Architecture
+        ↓
+Design Security
+        ↓
+Build System
+        ↓
+Continuously Monitor & Maintain
+```
+
+ This is especially important in financial systems.
+
+ Security requirements should influence architectural decisions from the beginning.
+
+---
+
+ # Financial Data Security Example
+
+ Consider a simplified financial-data platform:
+
+```
+             External Market Data
+                      │
+                      ↓
+                 Ingestion
+                      │
+                      ↓
+                     S3
+                      │
+                      ↓
+                Data Processing
+                      │
+                      ↓
+                  Data Warehouse
+                      │
+              ┌───────┴────────┐
+              ↓                ↓
+        Financial Model     Analytics
+              │                │
+              └───────┬────────┘
+                      ↓
+               Business Users
+```
+
+ Now add security responsibilities:
+
+```
+Data Source
+     │
+     ├── Secure Transmission
+     ↓
+S3
+     │
+     ├── Access Control
+     ├── Encryption
+     └── Data Protection
+     ↓
+Processing
+     │
+     ├── Restricted Access
+     └── Secure Network
+     ↓
+Warehouse
+     │
+     ├── Permissions
+     └── Controlled Queries
+     ↓
+Financial Model
+     │
+     └── Authorized Users
+```
+
+ This demonstrates that security follows the data throughout its lifecycle.
+
+---
+
+ # Security and the Data Lifecycle
+
+ I can now think about security in terms of the complete data lifecycle:
+
+```
+Collect
+  ↓
+Transfer
+  ↓
+Store
+  ↓
+Process
+  ↓
+Analyze
+  ↓
+Share
+  ↓
+Archive / Delete
+```
+
+ At every stage, I should ask:
+
+```
+Who can access the data?
+What can they do?
+Where is the data?
+How is it protected?
+How long should access exist?
+```
+
+ This way of thinking will be particularly useful when working with financial datasets.
+
+---
+
+ # Shared Responsibility Does Not Mean Equal Responsibility
+
+ One subtle but important point is that "shared responsibility" does not mean AWS and the customer perform exactly the same security tasks.
+
+ The responsibility is divided according to the service and infrastructure layer.
+
+```
+Physical Infrastructure
+        ↓
+        AWS
+        ↓
+Cloud Infrastructure
+        ↓
+        AWS
+        ↓
+Resource Configuration
+        ↓
+      Customer
+        ↓
+Operating System / Application
+        ↓
+      Customer
+        ↓
+Data & Access
+        ↓
+      Customer
+```
+
+ The exact boundary varies depending on which AWS service is being used.
+
+ Therefore, whenever I introduce a new AWS service into a data architecture, I should understand:
+
+ > **What does AWS manage, and what do I need to configure and secure?**
+
+---
+
+ # Connecting This to the Previous Lectures
+
+ The progression across the AWS lectures is becoming clearer.
+
+ First:
+
+```
+Cloud Infrastructure
+```
+
+ Then:
+
+```
+Compute
+Storage
+Databases
+Networking
+```
+
+ Then:
+
+```
+VPC
+Subnets
+IP Addresses
+CIDR
+```
+
+ And now:
+
+```
+Security
+     ↓
+Shared Responsibility
+     ↓
+Data Protection
+     ↓
+Access Control
+```
+
+ These are not independent concepts.
+
+ They work together to form a complete cloud architecture.
+
+```
+                    AWS Cloud
+                        │
+        ┌───────────────┼───────────────┐
+        ↓               ↓               ↓
+     Compute         Storage         Network
+        │               │               │
+        └───────────────┼───────────────┘
+                        ↓
+                    Databases
+                        ↓
+                   Data Systems
+                        ↓
+                    Security
+                        │
+        ┌───────────────┼───────────────┐
+        ↓               ↓               ↓
+     Identity        Network          Data
+     & Access        Security        Protection
+```
+
+---
+
+ # What I Want to Remember
+
+ The key concepts from this reading are:
+
+ - Cloud computing removes the need to manage physical infrastructure directly.
+- AWS is responsible for the **security of the cloud**.
+- Customers are responsible for **security in the cloud**.
+- AWS secures the physical facilities and underlying infrastructure.
+- Customers are responsible for securing their data and configurations.
+- Customers control who can access their data and resources.
+- Data needs protection both **at rest** and **in transit**.
+- Access should be carefully controlled.
+- Network architecture such as VPCs and subnets contributes to security.
+- Different AWS services have different responsibility boundaries.
+- Security should be considered during architecture design, not after implementation.
+- Data-engineering pipelines need security controls across their entire lifecycle.
+
+---
+
+ # My Financial Engineering Mental Model
+
+ For my financial-data projects, I want to think about security using the following model:
+
+```
+                    Financial Data
+                          │
+                          ↓
+                    Data Lifecycle
+                          │
+          ┌───────────────┼───────────────┐
+          ↓               ↓               ↓
+       Storage         Processing       Access
+          │               │               │
+          ↓               ↓               ↓
+      Encryption       Network        Permissions
+                          │
+                          ↓
+                       VPC
+                          │
+                    ┌─────┴─────┐
+                    ↓           ↓
+                 Public       Private
+                 Layer         Layer
+                    │           │
+                    └─────┬─────┘
+                          ↓
+                  Financial Models
+                          ↓
+                  Business Decisions
+```
+
+ The important principle for me is:
+
+ > **Financial data should be treated as an asset that needs to be protected throughout its entire lifecycle.**
+
+---
+
+ # From Cloud Infrastructure to Secure Financial Systems
+
+ The overall learning progression now looks like:
+
+```
+Business Problem
+       ↓
+Stakeholder Requirements
+       ↓
+Data Requirements
+       ↓
+System Architecture
+       ↓
+Cloud Infrastructure
+       ↓
+AWS Services
+       ↓
+Network Architecture
+       ↓
+Security Architecture
+       ↓
+Data Pipeline
+       ↓
+Reliable & Secure Data
+       ↓
+Financial Models
+       ↓
+Business Decisions
+```
+
+ This gives me a much broader understanding of data engineering.
+
+ I am not simply learning how to move data from one system to another.
+
+ I am learning how to build systems where data can be:
+
+ - **Collected reliably**
+- **Stored appropriately**
+- **Processed efficiently**
+- **Accessed securely**
+- **Protected throughout its lifecycle**
+- **Used for analytics and financial modelling**
+
+ The Shared Responsibility Model is therefore an important mindset to carry forward:
