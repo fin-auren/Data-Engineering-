@@ -3538,4 +3538,832 @@ Business Value
 
  > **How will I know whether the product is actually useful?**
 
+Absolutely. I’ll keep the **same README style, structure, depth, and first-person “My Perspective: Applying This to Finance” angle** from your previous lecture, while adapting the AWS concepts into a financial-data-engineering context.
 
+ ## AWS Cloud Infrastructure for Data Engineering
+
+ This lecture introduces the foundational concepts of cloud computing and how AWS provides the infrastructure needed to build modern data systems.
+
+ The central idea is that cloud platforms allow organizations to consume computing resources **on demand**, rather than purchasing and maintaining all of the required infrastructure themselves.
+
+ AWS describes cloud computing as the **on-demand delivery of IT resources over the Internet with pay-as-you-go pricing**.
+
+ This creates a fundamentally different approach to building data systems compared with traditional on-premises infrastructure.
+
+ Instead of purchasing servers, storage systems, and networking equipment in advance, an organization can provision the resources it needs when required and scale them as demand changes.
+
+---
+
+ ## From On-Premises Infrastructure to the Cloud
+
+ Traditionally, organizations would build their own data centers and purchase infrastructure upfront.
+
+ For example, a company might need to purchase:
+
+ - Servers for computation
+- Storage systems for data
+- Networking equipment
+- Database infrastructure
+- Backup systems
+- Physical facilities
+- Hardware maintenance
+
+ This creates a significant challenge because the organization needs to estimate its future capacity requirements.
+
+ If the company purchases too much infrastructure, resources may remain unused.
+
+ If it purchases too little, the infrastructure may become a bottleneck when demand increases.
+
+ Cloud computing changes this model.
+
+```
+Traditional Infrastructure
+
+Estimate Future Demand
+        ↓
+Purchase Hardware
+        ↓
+Build Data Center
+        ↓
+Install & Configure
+        ↓
+Maintain Infrastructure
+        ↓
+Scale Manually
+```
+
+ Compared with:
+
+```
+Cloud Infrastructure
+
+Business Requirement
+        ↓
+Provision Resources
+        ↓
+Use Resources
+        ↓
+Scale When Needed
+        ↓
+Pay for Usage
+        ↓
+Remove Resources When No Longer Needed
+```
+
+ The cloud therefore changes infrastructure from something that organizations primarily **own** into something they can **consume as a service**.
+
+---
+
+ ## The Three Fundamental Infrastructure Resources
+
+ One of the important concepts introduced in this lecture is that many cloud services can be understood through three fundamental infrastructure categories:
+
+ - **Compute**
+- **Storage**
+- **Networking**
+
+ These three building blocks form the foundation for many data engineering systems.
+
+---
+
+ ## Compute
+
+ Compute resources provide places where code can execute.
+
+ In simple terms:
+
+ > **Compute is where processing happens.**
+
+ AWS provides several different ways to obtain compute resources.
+
+ These include:
+
+ - Virtual machines
+- Container hosting
+- Serverless functions
+- Other managed compute services
+
+ The appropriate choice depends on the requirements of the system.
+
+ For example, a data engineering pipeline might require compute resources to:
+
+ - Process incoming financial data
+- Transform raw market data
+- Calculate financial metrics
+- Run ETL/ELT workloads
+- Execute machine-learning workloads
+- Validate incoming datasets
+
+ The important point is that compute is not simply about "having a server."
+
+ It is about providing the appropriate processing capacity for the workload.
+
+---
+
+ ## Storage
+
+ Storage is where data is persisted.
+
+ AWS provides multiple storage options, including services such as **Amazon S3** and **Amazon Elastic Block Store (EBS)**, as well as various database services.
+
+ Different storage systems are designed for different requirements.
+
+ For example:
+
+```
+Raw Data
+   ↓
+Object Storage
+   ↓
+Processed Data
+   ↓
+Database / Data Warehouse
+   ↓
+Analytics / ML
+```
+
+ In a financial data system, storage could contain:
+
+ - Historical market prices
+- Trade records
+- Portfolio positions
+- Financial statements
+- Reference data
+- Transaction data
+- Risk calculations
+- Model outputs
+- Alternative data
+
+ This makes storage a particularly important part of financial data engineering because financial systems often need to retain large amounts of historical information.
+
+---
+
+ ## Networking
+
+ Networking provides the connectivity between different resources and external systems.
+
+ In AWS, an important networking concept is the **Amazon Virtual Private Cloud (VPC)**.
+
+ A VPC allows organizations to create a private network within AWS.
+
+ This becomes important when building systems that contain sensitive financial information.
+
+ For example:
+
+```
+External Data Source
+        ↓
+     Internet
+        ↓
+     AWS Network
+        ↓
+       VPC
+   ┌────┴────┐
+   ↓         ↓
+Compute    Storage
+   ↓         ↓
+Database   Data Lake
+```
+
+ Networking therefore provides the connectivity required for different components of a data architecture to communicate with each other while also supporting security and isolation.
+
+---
+
+ ## Beyond Compute, Storage, and Networking
+
+ AWS provides many more categories of services beyond these fundamental infrastructure components.
+
+ These include services related to:
+
+ - Security
+- Data ingestion
+- Data streaming
+- Data transformation
+- Databases
+- Monitoring
+- Analytics
+- Machine learning
+- Application development
+
+ This is important from a data engineering perspective because modern data systems are rarely built using a single technology.
+
+ Instead, engineers combine multiple services together.
+
+```
+Data Source
+     ↓
+Ingestion
+     ↓
+Storage
+     ↓
+Transformation
+     ↓
+Data Warehouse / Lake
+     ↓
+Analytics / ML
+     ↓
+Business Users
+```
+
+ Each component may be implemented using a different managed cloud service.
+
+---
+
+ ## Scalability and Elasticity
+
+ One of the major advantages of cloud infrastructure is **scalability and elasticity**.
+
+ These concepts are related but slightly different.
+
+ **Scalability** refers to the ability of a system to handle increasing or decreasing workloads.
+
+ **Elasticity** refers to the ability to dynamically adjust resources according to demand.
+
+ For example, imagine a financial data pipeline that normally processes a moderate amount of data during the day but experiences a large increase in activity during market volatility.
+
+ A traditional infrastructure approach might require the company to purchase enough hardware in advance to handle the maximum expected workload.
+
+ With cloud infrastructure, resources can be adjusted according to demand.
+
+```
+Normal Demand
+     ↓
+Smaller Resources
+     ↓
+Demand Increases
+     ↓
+More Resources
+     ↓
+Demand Decreases
+     ↓
+Reduce Resources
+```
+
+ This is particularly useful for financial systems because workloads are not always constant.
+
+ Market activity can change significantly depending on:
+
+ - Trading hours
+- Market events
+- Economic announcements
+- Earnings releases
+- Major geopolitical events
+- Market volatility
+- End-of-day processing
+
+ Cloud elasticity allows infrastructure to respond to these changes more efficiently.
+
+---
+
+ ## The Electricity Analogy
+
+ The lecture compares cloud computing with electricity.
+
+ When using electricity, we generally do not need to know:
+
+ - Where the power was generated
+- Which physical equipment generated it
+- How the electricity was transported
+- How the infrastructure is maintained
+
+ We simply consume the electricity and pay for what we use.
+
+ Cloud computing provides a similar abstraction.
+
+```
+Physical Infrastructure
+        ↓
+      AWS
+        ↓
+Cloud Services
+        ↓
+   Our Application
+```
+
+ As a data engineer, I can focus more on designing the data system rather than physically managing the underlying data-center infrastructure.
+
+ This is one of the major abstractions provided by cloud computing.
+
+---
+
+ ## AWS Global Infrastructure
+
+ AWS services are hosted in physical data centers distributed around the world.
+
+ However, as users of AWS, we generally interact with this infrastructure through higher-level concepts such as:
+
+ - Regions
+- Availability Zones
+
+ This allows engineers to design systems without directly managing individual physical data centers.
+
+---
+
+ ## AWS Regions
+
+ An AWS **Region** represents a geographical area containing multiple Availability Zones.
+
+ Examples include regions associated with locations such as:
+
+ - US East (Northern Virginia)
+- Asia Pacific (Mumbai)
+- Europe (Frankfurt)
+
+ When deploying AWS resources, the region becomes an important architectural decision.
+
+ The choice of region can affect:
+
+ - Latency
+- Data residency
+- Availability
+- Compliance
+- Cost
+- Disaster recovery
+- Proximity to users and data sources
+
+ This becomes especially important in financial systems because financial data can be subject to regulatory and geographical requirements.
+
+---
+
+ ## Availability Zones
+
+ Each AWS Region contains multiple **Availability Zones (AZs)**.
+
+ An Availability Zone represents a grouping of data centers within a region.
+
+ The architecture can therefore be understood as:
+
+```
+AWS Region
+│
+├── Availability Zone 1
+│      ├── Data Center
+│      └── Data Center
+│
+├── Availability Zone 2
+│      ├── Data Center
+│      └── Data Center
+│
+└── Availability Zone 3
+       ├── Data Center
+       └── Data Center
+```
+
+ The separation between Availability Zones is designed to reduce the impact of failures.
+
+ For example, if an issue affects one Availability Zone, workloads can potentially fail over to another Availability Zone.
+
+ This provides an important foundation for building **highly available and resilient systems**.
+
+---
+
+ ## Reliability and Fault Tolerance
+
+ This concept is particularly relevant to financial systems.
+
+ Imagine a system responsible for processing:
+
+ - Trading data
+- Portfolio positions
+- Risk calculations
+- Transaction records
+
+ If the infrastructure supporting the system fails, the consequences could be significant.
+
+ Therefore, data engineers need to think about:
+
+ - Availability
+- Redundancy
+- Fault tolerance
+- Disaster recovery
+- Backup
+- Recovery time
+- Recovery point
+
+ AWS regions and Availability Zones provide infrastructure that can be used to design systems with greater resilience.
+
+ The important architectural principle is:
+
+ > **Do not assume that individual infrastructure components will never fail. Design the system so that failures can be handled.**
+
+---
+
+ ## AWS Global Network
+
+ AWS connects its infrastructure through a global network of high-speed links.
+
+ This allows different facilities and Availability Zones to communicate with each other with low latency.
+
+ From a data engineering perspective, this network becomes part of the underlying infrastructure that allows different components of a data platform to work together.
+
+ For example:
+
+```
+Data Ingestion
+      ↓
+Processing
+      ↓
+Storage
+      ↓
+Database
+      ↓
+Analytics
+```
+
+ Each component may be deployed in different infrastructure locations while still communicating through the cloud network.
+
+---
+
+ ## AWS as Building Blocks
+
+ One of the ideas I find particularly useful from this lecture is to think of AWS services as **building blocks**.
+
+ A data engineer rarely uses one AWS service in isolation.
+
+ Instead, multiple services can be combined to create a complete data system.
+
+ For example:
+
+```
+External Financial Data
+        ↓
+   Data Ingestion
+        ↓
+     Amazon S3
+        ↓
+   Transformation
+        ↓
+ Data Warehouse / Lake
+        ↓
+ Analytics / ML
+        ↓
+ Financial Insights
+```
+
+ The specific AWS services can change depending on the requirements.
+
+ The architecture should therefore come first, while the individual services are selected based on what the system needs.
+
+ This connects directly to the previous lecture's principle:
+
+```
+Problem
+   ↓
+Requirements
+   ↓
+Architecture
+   ↓
+Technology Selection
+   ↓
+Implementation
+```
+
+---
+
+ ## My Perspective: Applying This to Financial Modelling
+
+ This is where I see a strong connection between data engineering and financial modelling.
+
+ A financial model is often treated primarily as a mathematical or analytical problem.
+
+ However, the quality of a financial model depends heavily on the quality of the data feeding it.
+
+ For example, suppose I want to build a portfolio-risk model.
+
+ The model might require:
+
+ - Historical prices
+- Corporate actions
+- Trading volumes
+- Portfolio positions
+- Security identifiers
+- Interest rates
+- FX rates
+- Economic indicators
+- Company fundamentals
+
+ The modelling layer is only one part of the overall system.
+
+ A more complete architecture could look like:
+
+```
+Financial Data Sources
+        ↓
+Data Ingestion
+        ↓
+Raw Data Storage
+        ↓
+Data Validation
+        ↓
+Data Transformation
+        ↓
+Curated Financial Dataset
+        ↓
+Feature Engineering
+        ↓
+Financial Model
+        ↓
+Risk / Return Analytics
+        ↓
+Decision Making
+```
+
+ This makes it clear that **financial modelling and data engineering are closely connected**.
+
+ A sophisticated model cannot compensate for unreliable or poorly managed input data.
+
+---
+
+ ## Example: Building a Market Data System
+
+ Imagine I want to build a system that collects daily stock-market data.
+
+ The system might receive:
+
+```
+Ticker
+Date
+Open
+High
+Low
+Close
+Volume
+Adjusted Close
+```
+
+ Instead of putting everything directly into a database, I could design a layered architecture.
+
+ ### Raw Layer
+
+ Store the original data exactly as received.
+
+```
+Raw Market Data
+      ↓
+Amazon S3
+```
+
+ ### Processing Layer
+
+ Validate and transform the data.
+
+ Examples:
+
+ - Check missing prices
+- Validate ticker symbols
+- Standardize dates
+- Handle duplicates
+- Adjust data types
+- Apply corporate-action adjustments
+
+```
+Raw Data
+   ↓
+Validation
+   ↓
+Transformation
+```
+
+ ### Curated Layer
+
+ Produce a clean dataset suitable for analytics and modelling.
+
+```
+Clean Market Data
+       ↓
+Financial Features
+       ↓
+Models
+```
+
+ This separation is useful because it preserves the original data while allowing the processed datasets to evolve.
+
+---
+
+ ## Why Cloud Infrastructure Matters for Financial Modelling
+
+ Financial datasets can grow significantly over time.
+
+ For example, a research platform may eventually contain:
+
+ - Decades of historical prices
+- Thousands of securities
+- Intraday market data
+- Fundamental datasets
+- Economic data
+- Alternative datasets
+- Millions or billions of records
+
+ The infrastructure needs to support this growth.
+
+ Cloud systems provide several useful properties:
+
+ - Elastic storage
+- Scalable computation
+- Managed networking
+- High availability
+- Geographic distribution
+- Integration between services
+- Pay-as-you-go infrastructure
+
+ This means I can start with a relatively small financial-data project and potentially scale the architecture as the dataset and workload grow.
+
+---
+
+ ## Infrastructure Decisions Become Financial Decisions
+
+ Another important connection I see is that infrastructure decisions can directly affect the economics of a financial modelling system.
+
+ For example:
+
+ > How much data should be stored?
+
+ > How frequently should data be processed?
+
+ > Should computation happen in real time or in batches?
+
+ > How long should historical data be retained?
+
+ > Where should the data be stored?
+
+ > How much redundancy is required?
+
+ These are not purely technical questions.
+
+ They involve trade-offs between:
+
+ - Cost
+- Performance
+- Reliability
+- Accuracy
+- Latency
+- Complexity
+- Regulatory requirements
+
+ This reinforces the idea from the previous lecture that data engineering is fundamentally about **requirements and trade-offs**, not simply choosing technologies.
+
+---
+
+ ## A Financial Data Engineering Architecture
+
+ Combining the concepts from this lecture with my financial-modelling objective, I can think about a simplified cloud architecture like this:
+
+```
+                 Financial Data Sources
+                          │
+                          ▼
+                   Data Ingestion
+                          │
+                          ▼
+                  ┌───────────────┐
+                  │   Raw Layer   │
+                  │   Amazon S3   │
+                  └───────┬───────┘
+                          │
+                          ▼
+                    Data Processing
+                          │
+                          ▼
+                  ┌───────────────┐
+                  │ Curated Data  │
+                  └───────┬───────┘
+                          │
+             ┌────────────┼────────────┐
+             ▼            ▼            ▼
+        Analytics     Financial ML   Reporting
+             │            │            │
+             └────────────┼────────────┘
+                          ▼
+                    Business Decisions
+```
+
+ This architecture is still intentionally high level.
+
+ The goal at this stage is not to memorize every AWS service.
+
+ Instead, I want to understand **how infrastructure components fit together to support a data system**.
+
+---
+
+ ## From Physical Infrastructure to Financial Insights
+
+ One of the biggest takeaways from this lecture is the number of abstraction layers involved in a modern data platform.
+
+```
+Physical Data Centers
+        ↓
+AWS Regions
+        ↓
+Availability Zones
+        ↓
+Cloud Infrastructure
+        ↓
+AWS Services
+        ↓
+Data Pipelines
+        ↓
+Data Products
+        ↓
+Financial Models
+        ↓
+Business Decisions
+```
+
+ As a data engineer, I may not directly interact with the physical data centers.
+
+ Instead, I work with the abstractions provided by the cloud platform.
+
+ This allows me to focus on designing systems that reliably transform raw data into useful information.
+
+---
+
+ ## Key Takeaways
+
+ The main concepts I want to retain from this lecture are:
+
+ - Cloud computing provides IT resources on demand.
+- AWS follows a pay-as-you-go model.
+- Compute provides processing capacity.
+- Storage provides persistent data storage.
+- Networking connects systems and resources.
+- Cloud infrastructure provides scalability and elasticity.
+- AWS organizes infrastructure into Regions and Availability Zones.
+- Multiple Availability Zones can improve system resilience.
+- AWS services can be combined as building blocks to create data systems.
+- Infrastructure decisions should be driven by system requirements.
+- Cloud architecture is particularly useful for growing financial datasets and workloads.
+- Financial modelling depends not only on models but also on reliable data infrastructure.
+
+---
+
+ ## Connecting This Lecture to the Previous One
+
+ The previous lecture introduced the principle:
+
+ > **Problem → Requirements → Architecture → Tool → Implementation**
+
+ This lecture adds another layer to that thinking.
+
+ Once the architecture has been defined, cloud platforms such as AWS provide the infrastructure building blocks required to implement it.
+
+ Therefore, I see the progression as:
+
+```
+Business Problem
+      ↓
+Stakeholder Requirements
+      ↓
+Data Requirements
+      ↓
+System Requirements
+      ↓
+Architecture
+      ↓
+Cloud Infrastructure
+      ↓
+AWS Services
+      ↓
+Data Pipelines
+      ↓
+Reliable Data
+      ↓
+Financial Models
+      ↓
+Business Decisions
+```
+
+ This is the connection I want to maintain throughout the rest of the course.
+
+ I am not learning AWS simply to learn AWS services.
+
+ I am learning cloud infrastructure as a way to **design, build, and operate reliable data systems**, and eventually apply those systems to financial modelling and analytics.
+
+---
+
+ ## What I Want to Carry Forward
+
+ The most important mindset shift from this lecture is:
+
+ > **Cloud infrastructure is not the end goal. It is an abstraction that allows us to build scalable and reliable data systems.**
+
+ For my financial-data projects, I therefore want to avoid approaching AWS as a collection of services that I simply need to memorize.
+
+ Instead, I want to understand:
+
+```
+What does the financial problem require?
+              ↓
+What data does the system need?
+              ↓
+How should that data flow?
+              ↓
+What architecture supports that flow?
+              ↓
+Which cloud services provide the required capabilities?
+              ↓
+How can the system scale reliably?
+```
+
+ This brings the technical infrastructure back to the original purpose:
+
+ > **Turning data into reliable information that can support financial analysis, modelling, and decision-making.**
