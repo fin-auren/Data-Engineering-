@@ -9930,4 +9930,1195 @@ Financial Models
 - Governance
 - Financial modelling workflows
 
- 
+  ## Data Storage — From Physical Storage to Data Lakes and Warehouses
+
+ After understanding **data generation, source systems, and data ingestion**, the next stage of the data engineering lifecycle is **data storage**.
+
+ Data storage is easy to take for granted because almost every digital interaction involves storage in some form.
+
+ When I:
+
+ - Create or delete a file
+- Open an application
+- Download data
+- Save a document
+- Send a message
+- Store a photograph
+- Query a database
+
+ I am interacting with some form of data storage system.
+
+ The same principle applies to data engineering.
+
+ > **The storage architecture I choose has a direct impact on the performance, scalability, reliability, and cost of the entire data system.**
+
+---
+
+ ## Why Storage Matters in Data Engineering
+
+ A simplified view of the lifecycle so far is:
+
+```
+Data Generation
+       ↓
+Source Systems
+       ↓
+Data Ingestion
+       ↓
+Data Storage
+       ↓
+Transformation
+       ↓
+Analytics / ML / Financial Models
+```
+
+ Storage sits between ingestion and transformation, but it is not simply a passive place where data is kept.
+
+ The storage layer influences:
+
+ - How quickly data can be written
+- How quickly data can be retrieved
+- How much data can be stored
+- How much storage costs
+- How data can be processed
+- How scalable the system is
+- How reliable the system is
+- How easily downstream users can access the data
+
+ This means that storage is an **architectural decision**, not simply an implementation detail.
+
+---
+
+ # My Financial Modelling Perspective
+
+ This becomes particularly important when thinking about financial modelling.
+
+ A financial model might depend on:
+
+```
+Market Data
+Economic Data
+Company Fundamentals
+Portfolio Positions
+Transactions
+Reference Data
+Alternative Data
+```
+
+ These datasets have very different characteristics.
+
+ For example:
+
+```
+Market Events
+      ↓
+High Frequency
+High Volume
+Low Latency
+```
+
+ while:
+
+```
+Company Fundamentals
+      ↓
+Lower Frequency
+Historical
+Structured
+```
+
+ Therefore, storing both datasets in exactly the same way may not always be appropriate.
+
+ The storage architecture should reflect the requirements of the data and its downstream use.
+
+---
+
+ # The Physical Ingredients of Storage
+
+ Before thinking about cloud services such as Amazon S3 or databases, it is useful to understand the physical components underneath them.
+
+ Some of the fundamental storage technologies include:
+
+ - Magnetic disks
+- Solid-state drives
+- RAM
+
+ These components have different characteristics in terms of:
+
+ - Cost
+- Speed
+- Capacity
+- Durability
+- Volatility
+
+ A simplified hierarchy is:
+
+```
+Faster
+  ↑
+  │
+ RAM
+  │
+ SSD
+  │
+ Magnetic Disk
+  │
+  ↓
+Cheaper / Higher Capacity
+```
+
+ The exact characteristics depend on the technology and workload, but the general trade-off is important.
+
+---
+
+ # Magnetic Disk Storage
+
+ Magnetic disks have been around for a long time, but they remain extremely important in modern data systems.
+
+ The main reason is cost.
+
+ Magnetic storage can provide large amounts of storage relatively cheaply.
+
+ This makes it useful when:
+
+```
+Large Amounts of Data
+        +
+Lower Cost Priority
+        ↓
+Disk Storage
+```
+
+ For data engineering, this matters because modern systems can contain enormous historical datasets.
+
+ For example, a financial institution might accumulate:
+
+```
+Years of
+Market Data
+     +
+Transactions
+     +
+Portfolio Data
+     +
+Economic Data
+```
+
+ Storing all of this data in the fastest possible storage would often be unnecessarily expensive.
+
+---
+
+ # Solid-State Storage
+
+ Solid-state storage, such as SSDs, provides significantly faster access than traditional magnetic disks.
+
+ SSDs are commonly used when performance matters more.
+
+ For example:
+
+```
+Database
+   ↓
+Fast Reads / Writes
+   ↓
+SSD Storage
+```
+
+ This can be particularly important for workloads involving:
+
+ - Databases
+- High-performance applications
+- Frequently accessed datasets
+- Low-latency systems
+
+ In financial systems, fast storage can become important for applications where data needs to be retrieved quickly.
+
+---
+
+ # RAM — Memory
+
+ RAM is another important form of storage.
+
+ Unlike disk and SSD storage, RAM provides extremely fast access.
+
+ It is commonly used when applications need very fast access to data during computation.
+
+ A simplified model is:
+
+```
+Persistent Storage
+       ↓
+      SSD
+       ↓
+      RAM
+       ↓
+     CPU
+```
+
+ Data may move closer to the CPU as it is actively being processed.
+
+ However, RAM is much more expensive than persistent storage and is generally volatile.
+
+---
+
+ # Volatile vs Persistent Storage
+
+ One important distinction is whether data survives when the system loses power.
+
+ ### Persistent Storage
+
+ Examples include:
+
+ - Magnetic disks
+- SSDs
+- Object storage
+
+ Data remains available after the system is restarted.
+
+ ### Volatile Storage
+
+ RAM is typically volatile.
+
+```
+Power On
+   ↓
+Data in RAM
+   ↓
+Power Loss
+   ↓
+Data Lost
+```
+
+ This is why RAM is primarily used as a fast working area rather than the primary long-term storage layer.
+
+---
+
+ # Storage Is More Than Hardware
+
+ One of the important lessons from this lecture is that modern data storage is not simply about physical disks.
+
+ Modern cloud storage systems are distributed across:
+
+```
+Servers
+   ↓
+Clusters
+   ↓
+Data Centers
+   ↓
+Regions
+```
+
+ This introduces additional components such as:
+
+ - Networking
+- CPU
+- Serialization
+- Compression
+- Caching
+- Distributed systems
+
+ Therefore:
+
+ > **Modern data storage is a combination of physical resources, software systems, and distributed architecture.**
+
+---
+
+ # Storage Hierarchy
+
+ I found the hierarchy presented in this lecture particularly useful.
+
+ It can be represented as:
+
+```
+                 High-Level Storage Abstractions
+              ┌──────────────────────────────────┐
+              │ Data Warehouse / Data Lake /     │
+              │ Data Lakehouse                   │
+              └──────────────────────────────────┘
+                              ↓
+                    Storage Systems
+              ┌──────────────────────────────────┐
+              │ Databases / Object Storage /    │
+              │ Streaming Storage / Caches      │
+              └──────────────────────────────────┘
+                              ↓
+                     Raw Ingredients
+              ┌──────────────────────────────────┐
+              │ Disk / SSD / RAM / Networking   │
+              │ Compression / Serialization     │
+              └──────────────────────────────────┘
+```
+
+ Each layer builds on the layer underneath it.
+
+---
+
+ # Layer 1 — Raw Storage Ingredients
+
+ At the lowest level we have the physical and infrastructure components.
+
+```
+Disk
+SSD
+RAM
+Networking
+CPU
+Serialization
+Compression
+Caching
+```
+
+ As a data engineer, I may not directly manage these components.
+
+ However, understanding them helps me understand why a storage system behaves the way it does.
+
+---
+
+ # Layer 2 — Storage Systems
+
+ On top of the raw infrastructure, we have actual storage systems.
+
+ Examples include:
+
+```
+Databases
+Object Storage
+File Storage
+Streaming Storage
+Memory-Based Storage
+```
+
+ For example:
+
+```
+Physical Infrastructure
+        ↓
+Storage System
+        ↓
+Amazon S3
+```
+
+ Or:
+
+```
+Physical Infrastructure
+        ↓
+Database Management System
+        ↓
+Relational Database
+```
+
+ These systems provide interfaces that allow applications and data pipelines to store and retrieve data without directly managing physical hardware.
+
+---
+
+ # Layer 3 — Storage Abstractions
+
+ At the highest level are broader storage architectures and abstractions.
+
+ Examples include:
+
+ - Data warehouses
+- Data lakes
+- Data lakehouses
+
+ These systems combine multiple underlying technologies to provide a higher-level interface for solving data-engineering problems.
+
+ The key idea is:
+
+ > **The higher I operate in the storage hierarchy, the less I need to worry about individual physical storage components.**
+
+---
+
+ # Object Storage
+
+ One important storage system introduced earlier in the course is object storage.
+
+ A common AWS example is:
+
+```
+Amazon S3
+```
+
+ Instead of thinking about individual disks or servers, I interact with objects and buckets.
+
+ Conceptually:
+
+```
+Bucket
+  │
+  ├── market_data/
+  │     ├── 2025-01-01.csv
+  │     ├── 2025-01-02.csv
+  │     └── 2025-01-03.csv
+  │
+  ├── fundamentals/
+  │     ├── apple.json
+  │     └── microsoft.json
+  │
+  └── transactions/
+        └── transactions.parquet
+```
+
+ The underlying infrastructure is abstracted away.
+
+ This makes object storage particularly useful for large-scale data platforms.
+
+---
+
+ # Data Warehouse
+
+ A **data warehouse** is another important storage abstraction.
+
+ A warehouse is generally designed to make structured data available for:
+
+ - Analytics
+- Reporting
+- Business intelligence
+- Aggregations
+- SQL queries
+- Downstream applications
+
+ A simplified architecture might look like:
+
+```
+Source Systems
+      ↓
+Ingestion
+      ↓
+Data Warehouse
+      ↓
+SQL Analytics
+      ↓
+Reports / Models
+```
+
+ In the AWS ecosystem, an example is Amazon Redshift.
+
+---
+
+ # Data Lake
+
+ A **data lake** generally provides a way to store large amounts of data in a relatively flexible form.
+
+ It can contain:
+
+```
+Structured Data
+Semi-Structured Data
+Unstructured Data
+Historical Data
+Raw Data
+Processed Data
+```
+
+ A simplified architecture might be:
+
+```
+Sources
+   ↓
+Ingestion
+   ↓
+Data Lake
+   ↓
+Processing
+   ↓
+Analytics / ML
+```
+
+ This makes data lakes particularly useful as a central repository for large-scale raw and processed datasets.
+
+---
+
+ # Data Lakehouse
+
+ The lecture also introduces a more recent concept:
+
+ > **Data Lakehouse**
+
+ The lakehouse attempts to combine useful characteristics of data lakes and data warehouses.
+
+ Conceptually:
+
+```
+Data Lake
+    +
+Data Warehouse Capabilities
+    ↓
+Data Lakehouse
+```
+
+ The exact implementation depends on the technology, but the broader idea is to provide flexible large-scale storage together with stronger data-management and analytical capabilities.
+
+---
+
+ # Storage Abstraction
+
+ One of the concepts I want to remember is **abstraction**.
+
+ When using a high-level storage system, I do not need to know:
+
+```
+Which physical disk?
+Which server?
+Which data center?
+Which storage controller?
+Which hardware component?
+```
+
+ Instead, I interact with a higher-level interface.
+
+ For example:
+
+```
+My Data Pipeline
+       ↓
+Amazon S3
+       ↓
+AWS Infrastructure
+       ↓
+Physical Storage
+```
+
+ The lower-level complexity is hidden from me.
+
+ This abstraction is one of the major advantages of cloud computing.
+
+---
+
+ # But Abstraction Does Not Mean Ignorance
+
+ This is one of the most important lessons from the lecture.
+
+ It is easy to say:
+
+ > "The cloud handles storage, so I don't need to understand storage."
+
+ That would be a mistake.
+
+ Even though cloud providers abstract away the hardware, the underlying characteristics still affect:
+
+ - Performance
+- Cost
+- Scalability
+- Latency
+- Reliability
+
+ Therefore:
+
+ > **I do not need to manage every storage component, but I should understand the characteristics and limitations of the storage system I am using.**
+
+---
+
+ # Why Storage Knowledge Matters
+
+ The lecture gives a very practical example.
+
+ A team needed to move a large dataset into a data warehouse.
+
+ Instead of using a bulk-loading approach, they inserted data:
+
+```
+Row 1 → Warehouse
+Row 2 → Warehouse
+Row 3 → Warehouse
+Row 4 → Warehouse
+...
+```
+
+ This meant they were performing individual row inserts.
+
+ The result was:
+
+```
+Very Slow
+     +
+Very Expensive
+```
+
+ Eventually, they changed the architecture to use bulk ingestion.
+
+```
+Large Dataset
+      ↓
+Bulk Load
+      ↓
+Data Warehouse
+```
+
+ This was much more appropriate for the workload.
+
+---
+
+ # My Financial Modelling Interpretation
+
+ This example is extremely relevant to financial data engineering.
+
+ Imagine I have:
+
+```
+10 Years of Historical Market Data
+```
+
+ containing millions or billions of records.
+
+ A poor ingestion approach might be:
+
+```
+Record 1 → Database
+Record 2 → Database
+Record 3 → Database
+...
+Record N → Database
+```
+
+ A better approach could involve:
+
+```
+Historical Files
+      ↓
+Bulk Ingestion
+      ↓
+Storage / Warehouse
+```
+
+ The difference can be enormous in terms of:
+
+ - Runtime
+- Infrastructure usage
+- Cost
+- Reliability
+- Operational complexity
+
+ This is why understanding the characteristics of the storage system matters.
+
+---
+
+ # Row-by-Row vs Bulk Processing
+
+ The basic principle is:
+
+```
+❌ Individual Writes
+
+Data
+ ↓
+Row
+ ↓
+Database
+ ↓
+Row
+ ↓
+Database
+ ↓
+Row
+ ↓
+Database
+```
+
+ Versus:
+
+```
+✅ Bulk Write
+
+Data
+ ↓
+Large Batch
+ ↓
+Database
+```
+
+ For large financial datasets, bulk operations are often far more appropriate than repeatedly making tiny writes.
+
+ The exact optimal strategy depends on the database and workload, but the broader principle is:
+
+ > **Storage systems have access patterns for which they are optimized.**
+
+---
+
+ # Storage and Access Patterns
+
+ Different workloads require different storage characteristics.
+
+ For example:
+
+ | Requirement | Important Storage Characteristic |
+| --- | --- |
+| Large historical dataset | Capacity + cost |
+| Real-time application | Low latency |
+| Financial reporting | Efficient analytical queries |
+| ML training | High-throughput data access |
+| Transaction processing | Fast writes + consistency |
+| Real-time risk | Low latency + high availability |
+| Long-term archives | Low cost + durability |
+
+This reinforces an idea from earlier lectures:
+
+```
+Business Requirement
+       ↓
+System Requirement
+       ↓
+Storage Requirement
+       ↓
+Storage Architecture
+```
+
+---
+
+ # Financial Data Storage Is Not One-Size-Fits-All
+
+ A financial platform might contain several different types of storage.
+
+ For example:
+
+```
+                    Financial Data Platform
+                             │
+       ┌─────────────────────┼─────────────────────┐
+       ↓                     ↓                     ↓
+ Historical Data        Transaction Data       Real-Time Data
+       ↓                     ↓                     ↓
+ Object Storage          Database             Streaming Storage
+       │                     │                     │
+       └─────────────────────┼─────────────────────┘
+                             ↓
+                       Data Warehouse
+                             ↓
+                    Financial Analytics
+```
+
+ Different storage systems can coexist within the same architecture.
+
+---
+
+ # Storage for Historical Market Data
+
+ Historical market data can become extremely large.
+
+ For example:
+
+```
+Tick Data
+   +
+OHLC Data
+   +
+Order Book Data
+   +
+Corporate Actions
+   +
+Fundamental Data
+```
+
+ A practical architecture could be:
+
+```
+Market Data Provider
+        ↓
+Batch Ingestion
+        ↓
+Object Storage
+        ↓
+Data Lake
+        ↓
+Transformation
+        ↓
+Analytical Storage
+        ↓
+Backtesting / ML
+```
+
+ Here, low-cost scalable storage is particularly valuable.
+
+---
+
+ # Storage for Transactional Data
+
+ Transactional data has different requirements.
+
+ For example:
+
+```
+Trade
+Account
+Portfolio
+Order
+Position
+```
+
+ These datasets often require structured schemas and reliable updates.
+
+ A relational database may therefore be appropriate:
+
+```
+Application
+    ↓
+Relational Database
+    ↓
+Transactions
+```
+
+ Later, the data can be moved into analytical storage:
+
+```
+Database
+    ↓
+Ingestion
+    ↓
+Data Warehouse
+    ↓
+Analytics
+```
+
+---
+
+ # Storage for Real-Time Data
+
+ Real-time financial systems may have a different architecture.
+
+ For example:
+
+```
+Market Events
+      ↓
+Streaming System
+      ↓
+Real-Time Processing
+      ↓
+Real-Time Storage / Cache
+      ↓
+Risk Monitoring
+```
+
+ Here, latency becomes more important.
+
+ This is another example of why a single storage system may not be appropriate for every stage of the architecture.
+
+---
+
+ # Storage and Cost
+
+ One of the strongest lessons from the lecture is that storage decisions can have major financial consequences.
+
+ A technically functional system can still be a poor system if it is unnecessarily expensive.
+
+ For example:
+
+```
+Solution A
+Fast
+Complex
+Expensive
+
+Solution B
+Slightly Slower
+Simpler
+Much Cheaper
+```
+
+ If the business requirement can be satisfied by Solution B, it may be the better architecture.
+
+ This is especially relevant in cloud environments because infrastructure usage is often directly connected to cost.
+
+---
+
+ # Storage and Performance
+
+ Cost is only one side of the equation.
+
+ Storage architecture can also have a major effect on performance.
+
+ For example:
+
+```
+Poor Storage Choice
+       ↓
+Slow Reads
+       ↓
+Slow Transformation
+       ↓
+Slow Financial Model
+       ↓
+Poor User Experience
+```
+
+ Conversely:
+
+```
+Appropriate Storage
+       ↓
+Efficient Data Access
+       ↓
+Faster Processing
+       ↓
+Faster Analytics / Models
+```
+
+ Therefore, storage should be considered as part of the entire system rather than as an isolated component.
+
+---
+
+ # Storage and the Financial Model
+
+ This is particularly important for my goal of applying data engineering to financial modelling.
+
+ A financial model is ultimately limited by the quality and accessibility of its inputs.
+
+```
+Storage
+   ↓
+Data Retrieval
+   ↓
+Data Processing
+   ↓
+Features / Inputs
+   ↓
+Financial Model
+   ↓
+Prediction / Valuation / Risk
+```
+
+ If the storage layer is poorly designed, the model can suffer from:
+
+ - Slow data retrieval
+- Stale data
+- Missing data
+- High infrastructure costs
+- Difficult historical analysis
+- Poor scalability
+
+ So data storage is part of the foundation of a production-quality financial modelling system.
+
+---
+
+ # A More Complete Financial Data Architecture
+
+ I can now combine the previous lectures into a broader architecture:
+
+```
+                    Financial Data Sources
+                            │
+          ┌─────────────────┼─────────────────┐
+          ↓                 ↓                 ↓
+        APIs            Databases           Files
+          │                 │                 │
+          └─────────────────┼─────────────────┘
+                            ↓
+                       Ingestion
+                    ┌───────┴───────┐
+                    ↓               ↓
+                 Batch          Streaming
+                    │               │
+                    └───────┬───────┘
+                            ↓
+                       Data Storage
+                    ┌───────┼────────┐
+                    ↓       ↓        ↓
+                 Object   Database   Stream
+                 Storage  Storage    Storage
+                    │       │        │
+                    └───────┼────────┘
+                            ↓
+                Data Lake / Warehouse
+                            ↓
+                     Transformation
+                            ↓
+                  Curated Financial Data
+                            ↓
+              ┌─────────────┼─────────────┐
+              ↓             ↓             ↓
+          Analytics      ML Models    Financial Models
+```
+
+ This architecture is starting to connect the individual concepts from the course into one system.
+
+---
+
+ # The Storage Design Mindset
+
+ The main lesson I take from this lecture is that I should not ask:
+
+ > "Which storage technology should I use?"
+
+ Instead, I should first ask:
+
+```
+What data am I storing?
+        ↓
+How much data?
+        ↓
+How frequently does it change?
+        ↓
+How quickly must it be accessed?
+        ↓
+Who will access it?
+        ↓
+How long must it be retained?
+        ↓
+What is the cost constraint?
+        ↓
+What storage architecture fits?
+```
+
+ This follows the same principle introduced earlier in the course:
+
+```
+❌ Tool → Problem
+
+Instead:
+
+✅ Problem
+    ↓
+Requirements
+    ↓
+Architecture
+    ↓
+Storage Characteristics
+    ↓
+Technology
+```
+
+---
+
+ # Storage as a Trade-Off
+
+ There is rarely a universally "best" storage system.
+
+ Instead, I need to balance different dimensions:
+
+```
+              Performance
+                   ▲
+                   │
+                   │
+       Cost ◄──────┼──────► Scalability
+                   │
+                   │
+                   ▼
+               Complexity
+```
+
+ Improving one characteristic may negatively affect another.
+
+ For example:
+
+```
+Higher Performance
+        ↓
+Potentially Higher Cost
+```
+
+ or:
+
+```
+Greater Flexibility
+        ↓
+Potentially Greater Complexity
+```
+
+ Good data engineering is therefore about finding the appropriate balance for the business requirement.
+
+---
+
+ # What I Want to Remember
+
+ The key ideas from this lecture are:
+
+ - Almost every digital interaction involves some form of data storage.
+- Storage decisions affect the performance, scalability, reliability, and cost of data systems.
+- Physical storage includes **magnetic disks, SSDs, and RAM**.
+- RAM provides very fast access but is expensive and generally volatile.
+- Disk storage provides large capacity at relatively low cost.
+- SSDs provide faster access than traditional magnetic disks.
+- Modern cloud storage is built from distributed infrastructure across servers and data centers.
+- Networking, compression, serialization, and caching are also important parts of modern storage systems.
+- Data engineers generally interact with higher-level storage systems rather than individual physical disks.
+- Storage systems include databases, object storage, streaming storage, and memory-based systems.
+- Higher-level storage abstractions include **data warehouses, data lakes, and data lakehouses**.
+- Abstraction hides infrastructure complexity, but understanding the underlying characteristics is still important.
+- Poor understanding of storage access patterns can result in serious performance and cost problems.
+- Bulk ingestion can be much more appropriate than individual row-by-row inserts for large datasets.
+- Storage architecture should be selected based on **business and system requirements**, not simply technology preference.
+
+---
+
+ # My Financial Engineering Mental Model
+
+ The main idea I take from this lecture is:
+
+ > **Data storage is not just about keeping data somewhere. It is about designing how data will be stored, accessed, scaled, and paid for throughout its lifecycle.**
+
+ For financial modelling, I can think about the problem like this:
+
+```
+Financial Data
+      ↓
+How much?
+      ↓
+How frequently does it arrive?
+      ↓
+How quickly must it be accessed?
+      ↓
+How long should it be retained?
+      ↓
+Who needs access?
+      ↓
+What processing will be performed?
+      ↓
+What storage system fits?
+      ↓
+Financial Analytics / Models
+```
+
+ This gives me another important principle for the repository:
+
+```
+❌ Choose Storage Technology
+       ↓
+Try to Fit the Problem
+
+Instead:
+
+✅ Understand Data
+       ↓
+Understand Access Pattern
+       ↓
+Understand Business Requirement
+       ↓
+Understand Performance / Cost Requirements
+       ↓
+Design Storage Architecture
+       ↓
+Choose Technology
+```
+
+---
+
+ # Connecting Storage to the Data Engineering Lifecycle
+
+ At this point, the lifecycle is becoming much clearer:
+
+```
+1. Data Generation
+        ↓
+2. Source Systems
+        ↓
+3. Data Ingestion
+        ↓
+4. Data Storage
+        ↓
+5. Data Transformation
+        ↓
+6. Serving / Analytics
+        ↓
+7. Financial Models / ML / Applications
+```
+
+ The next stage is **data transformation**.
+
+ Once the data has been ingested and stored, the next question becomes:
+
+ > **How do we turn raw stored data into clean, structured, reliable data that downstream users and financial models can actually use?**
+
+ This leads naturally into the next stage of the data engineering lifecycle: **Data Transformation**.
