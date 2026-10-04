@@ -11122,3 +11122,1476 @@ Choose Technology
  > **How do we turn raw stored data into clean, structured, reliable data that downstream users and financial models can actually use?**
 
  This leads naturally into the next stage of the data engineering lifecycle: **Data Transformation**.
+This lecture fits directly after your storage section. I’ve kept the same README style and emphasized **financial modelling, market data, portfolio analytics, risk, and feature engineering** so the course notes progressively connect to your goal.
+
+ ## Data Transformation — Turning Raw Data into Useful Data
+
+ After understanding **data generation, source systems, ingestion, and storage**, the next major stage of the data engineering lifecycle is **data transformation**.
+
+ This is where data engineering starts to create significant value for downstream users.
+
+ The overall purpose of a data engineer can be summarized as:
+
+```
+Raw Data
+   ↓
+Ingest
+   ↓
+Store
+   ↓
+Transform
+   ↓
+Useful Data
+   ↓
+Analytics / ML / Financial Models
+```
+
+ The important distinction is that simply storing raw data does not necessarily make it useful.
+
+ A database may contain millions of records, but if those records are difficult to query, inconsistent, poorly structured, or missing important business logic, downstream users still cannot effectively use them.
+
+ Therefore:
+
+ > **Data engineering is not just about moving and storing data. It is about turning raw data into reliable, useful, and accessible data.**
+
+---
+
+ # Transformation as the Value-Creation Stage
+
+ Consider a simple business example.
+
+ A business analyst wants to understand daily sales.
+
+ The raw source systems may contain:
+
+```
+Customer Table
+Product Table
+Order Table
+Transaction Table
+Payment Table
+```
+
+ The analyst does not necessarily want to understand all the relationships between these tables.
+
+ Instead, they may want something like:
+
+```
+Date
+Customer
+Product
+Quantity
+Price
+Revenue
+```
+
+ The data engineer's job is to transform the raw source data into something that makes this analysis easy.
+
+```
+Raw Source Data
+       ↓
+Cleaning
+       ↓
+Joining
+       ↓
+Aggregation
+       ↓
+Business Logic
+       ↓
+Analytical Dataset
+       ↓
+Business Analyst
+```
+
+ This is where the data engineer starts to directly enable downstream decision-making.
+
+---
+
+ # My Financial Modelling Perspective
+
+ This concept becomes even more important in financial modelling.
+
+ Financial data is rarely delivered in exactly the format required by a model.
+
+ For example, a raw market-data source might contain:
+
+```
+Timestamp
+Symbol
+Price
+Volume
+Exchange
+Trade ID
+```
+
+ But a financial model might need:
+
+```
+Daily Return
+Volatility
+Moving Average
+Momentum
+Volume Change
+Market Beta
+Drawdown
+Rolling Correlation
+```
+
+ Therefore:
+
+```
+Raw Market Data
+       ↓
+Transformation
+       ↓
+Financial Features
+       ↓
+Financial Model
+```
+
+ The transformation layer effectively becomes the bridge between **raw financial data** and **model-ready financial information**.
+
+---
+
+ # The Three Components of Transformation
+
+ The lecture breaks this stage into three important components:
+
+ 1. **Queries**
+2. **Data Modeling**
+3. **Data Transformation**
+
+ These concepts are closely related, but they represent different responsibilities.
+
+```
+             Data Transformation Stage
+                       │
+        ┌──────────────┼──────────────┐
+        ↓              ↓              ↓
+      Queries       Modeling     Transformation
+        │              │              │
+        ↓              ↓              ↓
+     Retrieve       Structure       Modify
+      Data           Data            Data
+```
+
+ All three can have a significant impact on the quality and performance of the final data system.
+
+---
+
+ # 1\. Queries
+
+ A query is essentially a request to retrieve data from a storage system.
+
+ In modern data engineering, one of the most important query languages is **SQL — Structured Query Language**.
+
+ A simplified example might look like:
+
+```
+SELECT
+    customer_id,
+    product_id,
+    quantity,
+    price
+FROM sales
+WHERE sale_date >= '2026-01-01';
+```
+
+ The purpose of the query is to retrieve the data required for downstream processing or analysis.
+
+---
+
+ # SQL as a Data Engineering Skill
+
+ SQL is particularly important because data engineers frequently work with structured and semi-structured data stored in:
+
+ - Relational databases
+- Data warehouses
+- Analytical databases
+- Cloud storage systems
+- Lakehouse platforms
+
+ A typical workflow might be:
+
+```
+Storage
+   ↓
+SQL Query
+   ↓
+Filtered Data
+   ↓
+Transformation
+   ↓
+Analytical Dataset
+```
+
+ SQL therefore becomes one of the main tools for interacting with stored data.
+
+---
+
+ # Queries Are Not Just About Getting Data
+
+ One thing I found important in this lecture is that writing a query is not enough.
+
+ A query can be logically correct and still be a poor query.
+
+ Poorly designed queries can cause:
+
+ - Slow execution
+- Excessive compute usage
+- High infrastructure costs
+- Delays in downstream pipelines
+- Excessive data movement
+- Performance problems in source systems
+
+ This is especially important in cloud environments where compute usage can directly translate into cost.
+
+---
+
+ # Query Performance
+
+ Consider two approaches.
+
+ ### Approach 1
+
+```
+Source
+  ↓
+Read Entire Dataset
+  ↓
+Filter Later
+```
+
+ ### Approach 2
+
+```
+Source
+  ↓
+Filter Early
+  ↓
+Read Only Required Data
+```
+
+ If the dataset contains billions of financial records, these approaches can have very different costs.
+
+ For example, suppose I have:
+
+```
+10 Years of Tick Data
+       ↓
+Billions of Records
+```
+
+ and I only need:
+
+```
+AAPL
+2025
+```
+
+ It would be inefficient to process the entire dataset if the storage/query system can filter the data earlier.
+
+ This leads to a broader principle:
+
+ > **Good data engineering considers not only what data a query returns, but also how much data the system has to process to return it.**
+
+---
+
+ # The Problem of Row Explosion
+
+ Another important issue mentioned in the lecture is **row explosion**.
+
+ This can happen when joining tables incorrectly.
+
+ Suppose I have:
+
+```
+Customers
+   ↓
+1,000 rows
+```
+
+ and:
+
+```
+Transactions
+   ↓
+100,000 rows
+```
+
+ A properly designed join might produce a meaningful relationship between customers and transactions.
+
+ But if the join condition is incorrect, the result can become dramatically larger than expected.
+
+ Conceptually:
+
+```
+Table A
+   ×
+Table B
+   ↓
+Unexpectedly Large Result
+```
+
+ This can consume significant compute and storage resources.
+
+ In extreme cases, it can cause downstream systems to fail.
+
+---
+
+ # Financial Example — Joining Market Data
+
+ Imagine I have:
+
+```
+Prices
+```
+
+ and:
+
+```
+Corporate Actions
+```
+
+ I want to adjust historical prices based on events such as:
+
+ - Stock splits
+- Dividends
+- Other corporate actions
+
+ A poorly defined join could duplicate price records.
+
+ For example:
+
+```
+Price Record
+     +
+Multiple Matching Corporate Actions
+     ↓
+Multiple Output Rows
+```
+
+ Instead of:
+
+```
+AAPL | 2026-01-10 | $250
+```
+
+ I might accidentally produce:
+
+```
+AAPL | 2026-01-10 | $250
+AAPL | 2026-01-10 | $250
+AAPL | 2026-01-10 | $250
+```
+
+ This could silently corrupt downstream calculations.
+
+ Therefore, understanding joins and query behavior is extremely important for financial data pipelines.
+
+---
+
+ # 2\. Data Modeling
+
+ The second major component is **data modeling**.
+
+ A data model represents how data relates to the real world.
+
+ In simple terms:
+
+ > **Data modeling is the deliberate process of deciding how data should be structured so that it represents the business correctly and can be used efficiently.**
+
+ This is more than simply deciding which columns belong in a table.
+
+ It involves understanding:
+
+ - Entities
+- Relationships
+- Definitions
+- Business rules
+- Processes
+- Workflows
+- Analytical requirements
+
+---
+
+ # Why Data Modeling Matters
+
+ Imagine a financial organization using the word:
+
+ > "Customer"
+
+ This could mean:
+
+ - A person with a brokerage account
+- A legal entity
+- An investment account
+- A beneficial owner
+- A trading client
+
+ Different teams may use the same word differently.
+
+ Therefore, a data model cannot be designed purely from a technical perspective.
+
+ The data engineer needs to work with stakeholders to understand what the data actually represents.
+
+---
+
+ # Data Modeling and Business Definitions
+
+ A useful model should reflect:
+
+```
+Business Processes
+       +
+Business Definitions
+       +
+Business Relationships
+       +
+Business Rules
+       ↓
+Data Model
+```
+
+ This is one of the areas where data engineering connects directly back to the first lecture.
+
+ We started with:
+
+```
+Business Need
+     ↓
+Requirements
+     ↓
+Architecture
+```
+
+ Now we are seeing that those requirements also influence:
+
+```
+Data Model
+```
+
+---
+
+ # Normalization
+
+ The lecture introduces the idea of **normalized data**.
+
+ Relational databases often store information in separate tables.
+
+ For example:
+
+```
+Customers
+---------
+customer_id
+customer_name
+country
+```
+
+```
+Products
+--------
+product_id
+product_name
+category
+price
+```
+
+```
+Orders
+------
+order_id
+customer_id
+product_id
+quantity
+order_date
+```
+
+ This structure reduces unnecessary duplication and makes relationships explicit.
+
+ Conceptually:
+
+```
+Customer
+    │
+    └──── Order
+             │
+             └──── Product
+```
+
+ This is useful for transactional systems.
+
+---
+
+ # Denormalization
+
+ However, the structure that is ideal for a transactional system may not be ideal for analytics.
+
+ An analyst may prefer something like:
+
+```
+Order Date
+Customer
+Product
+Category
+Quantity
+Price
+Revenue
+```
+
+ Instead of repeatedly joining several tables, the data engineer might create a denormalized analytical structure.
+
+```
+Normalized Source
+        ↓
+      Joins
+        ↓
+   Denormalization
+        ↓
+Analytical Dataset
+```
+
+ The objective is to make downstream analysis simpler and more efficient.
+
+---
+
+ # Financial Data Modeling
+
+ This idea is particularly important for financial analytics.
+
+ A transactional system might contain:
+
+```
+Accounts
+Trades
+Orders
+Securities
+Clients
+Portfolios
+```
+
+ But a portfolio analyst may want:
+
+```
+Date
+Portfolio
+Security
+Quantity
+Price
+Market Value
+Currency
+Sector
+Asset Class
+PnL
+```
+
+ Therefore, the data engineering layer may need to combine and model the underlying data into a structure designed for analysis.
+
+```
+Trading Systems
+      ↓
+Normalized Data
+      ↓
+Data Modeling
+      ↓
+Portfolio Dataset
+      ↓
+Risk / Performance Analytics
+```
+
+---
+
+ # A Model Should Represent the Real World
+
+ A good data model should not simply be technically convenient.
+
+ It should represent the actual business concepts.
+
+ For example, a portfolio might contain:
+
+```
+Portfolio
+    ↓
+Positions
+    ↓
+Securities
+    ↓
+Prices
+```
+
+ But a position is not simply a security.
+
+ It may depend on:
+
+```
+Portfolio
+Security
+Quantity
+Price
+Timestamp
+Currency
+```
+
+ Understanding these relationships is necessary before designing the model.
+
+ This is why data modeling requires both **technical knowledge and domain knowledge**.
+
+---
+
+ # 3\. Data Transformation
+
+ The third component is the actual manipulation and enhancement of data.
+
+ This can include:
+
+ - Cleaning
+- Type conversion
+- Standardization
+- Joining
+- Filtering
+- Aggregation
+- Enrichment
+- Calculating new fields
+- Restructuring schemas
+- Feature engineering
+
+ Conceptually:
+
+```
+Raw Data
+   ↓
+Clean
+   ↓
+Standardize
+   ↓
+Join
+   ↓
+Enrich
+   ↓
+Aggregate
+   ↓
+Model
+   ↓
+Useful Data
+```
+
+---
+
+ # Transformation Can Happen at Multiple Stages
+
+ One of the most important points from this lecture is that transformation does not happen only once.
+
+ It can occur throughout the data engineering lifecycle.
+
+```
+Source System
+      ↓
+Transformation
+      ↓
+Ingestion
+      ↓
+Transformation
+      ↓
+Storage
+      ↓
+Transformation
+      ↓
+Warehouse
+      ↓
+Transformation
+      ↓
+Analytics / ML
+```
+
+ Therefore:
+
+ > **Transformation is a continuous activity throughout the lifecycle rather than a single isolated step.**
+
+---
+
+ # Transformation Before Ingestion
+
+ Some transformations can happen directly in the source system.
+
+ For example, a source system might add:
+
+```
+created_at
+updated_at
+transaction_id
+```
+
+ before the data leaves the system.
+
+---
+
+ # Transformation During Ingestion
+
+ Data may also be transformed while it is moving through the pipeline.
+
+ For example:
+
+```
+Source
+   ↓
+Streaming Pipeline
+   ↓
+Add Metadata
+   ↓
+Standardize Fields
+   ↓
+Destination
+```
+
+ A streaming pipeline could enrich incoming events with:
+
+```
+event_timestamp
+source
+processing_timestamp
+data_version
+```
+
+---
+
+ # Transformation Immediately After Ingestion
+
+ Another common approach is to first land raw data and then perform basic transformations.
+
+ For example:
+
+```
+Raw Data
+   ↓
+Ingestion
+   ↓
+Raw Storage
+   ↓
+Type Conversion
+   ↓
+Schema Standardization
+   ↓
+Clean Data
+```
+
+ Suppose a market-data source sends:
+
+```
+price = "250.50"
+```
+
+ as a string.
+
+ The transformation layer might convert it to:
+
+```
+price = 250.50
+```
+
+ as a numeric value.
+
+---
+
+ # Financial Example — Standardizing Market Data
+
+ Imagine I receive market data from several providers.
+
+ Provider A:
+
+```
+ticker
+timestamp
+price
+volume
+```
+
+ Provider B:
+
+```
+symbol
+time
+last_price
+vol
+```
+
+ Provider C:
+
+```
+security_id
+event_time
+close
+quantity
+```
+
+ These datasets represent similar concepts but use different schemas.
+
+ A transformation layer can standardize them:
+
+```
+Provider A ──┐
+Provider B ──┼──→ Standardization ──→ Common Market Data Model
+Provider C ──┘
+```
+
+ Result:
+
+```
+security_id
+timestamp
+price
+volume
+```
+
+ This is extremely valuable because downstream models no longer need to understand the quirks of every individual data provider.
+
+---
+
+ # Data Enrichment
+
+ Transformation can also add information that was not present in the original record.
+
+ For example:
+
+```
+Trade
+ ↓
+Security Reference Data
+ ↓
+Enriched Trade
+```
+
+ A raw trade might contain:
+
+```
+security_id
+quantity
+price
+timestamp
+```
+
+ After enrichment:
+
+```
+security_id
+quantity
+price
+timestamp
+sector
+country
+asset_class
+currency
+exchange
+```
+
+ This creates much more useful analytical data.
+
+---
+
+ # Financial Feature Engineering
+
+ This is where transformation becomes particularly interesting for my financial modelling goal.
+
+ A raw price series might look like:
+
+```
+Date       Price
+2026-01-01 100
+2026-01-02 102
+2026-01-03 101
+2026-01-04 105
+```
+
+ A financial model may not use the raw price directly.
+
+ Instead, I might calculate:
+
+```
+Daily Return
+Rolling Return
+Volatility
+Moving Average
+Momentum
+Drawdown
+Beta
+Sharpe Ratio
+Rolling Correlation
+```
+
+ For example:
+
+```
+Price
+ ↓
+Transformation
+ ↓
+Returns
+ ↓
+Rolling Statistics
+ ↓
+Features
+ ↓
+Financial Model
+```
+
+ This is a perfect example of how data engineering and financial modelling connect.
+
+---
+
+ # Transformation vs Feature Engineering
+
+ There is an important distinction I want to maintain.
+
+ **Data transformation** is the broader process of modifying data so it becomes usable.
+
+ **Feature engineering** is more specifically focused on creating useful variables for analytical or machine-learning models.
+
+ Conceptually:
+
+```
+Data Transformation
+        │
+        ├── Cleaning
+        ├── Standardization
+        ├── Joining
+        ├── Aggregation
+        ├── Enrichment
+        │
+        └── Feature Engineering
+                 ↓
+          Model Inputs
+```
+
+ Therefore, feature engineering can be viewed as one specialized use of transformation.
+
+---
+
+ # Transformation for Financial Models
+
+ Suppose I want to build a model predicting future returns.
+
+ Raw data:
+
+```
+Price
+Volume
+Market Index
+Interest Rate
+Company Fundamentals
+```
+
+ Transformation might produce:
+
+```
+Return_1D
+Return_5D
+Return_20D
+Volume_Change
+Volatility_20D
+Beta_60D
+Market_Return
+Interest_Rate_Change
+PE_Ratio
+```
+
+ Then:
+
+```
+Raw Financial Data
+        ↓
+Transformation
+        ↓
+Feature Engineering
+        ↓
+Feature Store / Analytical Dataset
+        ↓
+Machine Learning Model
+```
+
+ This is the point where data engineering becomes directly useful to quantitative finance.
+
+---
+
+ # Transformation and Data Quality
+
+ Transformation is also where many data-quality problems can be detected and corrected.
+
+ For example:
+
+```
+Raw Data
+   ↓
+Missing Values
+   ↓
+Invalid Types
+   ↓
+Duplicate Records
+   ↓
+Incorrect Timestamps
+   ↓
+Outliers
+   ↓
+Inconsistent Symbols
+```
+
+ The transformation layer can apply rules to identify and handle these problems.
+
+ For financial data, this becomes especially important because seemingly small data-quality issues can affect model outputs significantly.
+
+---
+
+ # Example — Duplicate Market Data
+
+ Suppose the source accidentally sends the same market event twice:
+
+```
+Timestamp       Price
+10:00:01        100
+10:00:02        101
+10:00:02        101
+10:00:03        102
+```
+
+ If I calculate returns without detecting the duplicate:
+
+```
+100 → 101 → 101 → 102
+```
+
+ the resulting dataset may not represent the true market sequence.
+
+ A transformation step could identify duplicate events and apply an appropriate rule.
+
+```
+Raw Events
+    ↓
+Deduplication
+    ↓
+Clean Events
+    ↓
+Return Calculation
+```
+
+---
+
+ # Transformation and Time
+
+ Time is particularly important in financial data.
+
+ A financial pipeline may need to deal with:
+
+ - Time zones
+- Trading sessions
+- Market holidays
+- Timestamps
+- Event ordering
+- Late-arriving data
+- Different market calendars
+
+ Therefore, transformation is not simply about changing column names.
+
+ It may require domain-specific financial logic.
+
+---
+
+ # Transformation and Historical Data
+
+ Another important consideration is that financial data often needs to be reproducible.
+
+ Suppose I calculate a feature today:
+
+```
+20-Day Volatility
+```
+
+ I may later need to reproduce exactly how that feature was calculated for historical model training.
+
+ Therefore, transformation pipelines should ideally be:
+
+ - Consistent
+- Documented
+- Reproducible
+- Version-controlled
+- Testable
+
+ This becomes increasingly important when building production financial models.
+
+---
+
+ # The Transformation Layer as a Contract
+
+ I can think of a transformation pipeline as creating a contract between raw data and downstream users.
+
+```
+Raw Source
+     ↓
+Transformation Layer
+     ↓
+Standardized Dataset
+     ↓
+Data Analyst / Data Scientist / Model
+```
+
+ The downstream user should not need to understand every problem in the source systems.
+
+ Instead, the transformation layer should provide a predictable dataset.
+
+ For example:
+
+```
+security_id
+timestamp
+price
+volume
+currency
+return_1d
+volatility_20d
+```
+
+ with clearly defined meanings.
+
+---
+
+ # Data Lineage
+
+ This also introduces the idea of **data lineage**.
+
+ If a model uses:
+
+```
+volatility_20d
+```
+
+ I should ideally be able to trace where it came from:
+
+```
+volatility_20d
+      ↓
+20-Day Price Window
+      ↓
+Daily Returns
+      ↓
+Clean Market Prices
+      ↓
+Raw Market Data
+      ↓
+Market Data Provider
+```
+
+ This becomes extremely valuable for debugging, auditing, and financial model governance.
+
+---
+
+ # Transformation Architecture
+
+ Combining the concepts from this lecture gives me a more complete architecture:
+
+```
+                  Raw Data
+                     │
+                     ↓
+                Data Storage
+                     │
+                     ↓
+                  Queries
+                     │
+                     ↓
+              Data Modeling
+                     │
+                     ↓
+               Transformation
+                     │
+        ┌────────────┼────────────┐
+        ↓            ↓            ↓
+    Cleaning     Enrichment    Aggregation
+        │            │            │
+        └────────────┼────────────┘
+                     ↓
+              Curated Dataset
+                     │
+        ┌────────────┼────────────┐
+        ↓            ↓            ↓
+    Analytics        ML       Financial Models
+```
+
+---
+
+ # From Raw Data to Model-Ready Data
+
+ For my particular objective, I can simplify the transformation process as:
+
+```
+Raw Financial Data
+        ↓
+Data Cleaning
+        ↓
+Data Standardization
+        ↓
+Data Validation
+        ↓
+Data Modeling
+        ↓
+Data Enrichment
+        ↓
+Feature Engineering
+        ↓
+Model-Ready Dataset
+        ↓
+Financial Model
+```
+
+ This is becoming the foundation of the architecture I want to build throughout this course.
+
+---
+
+ # The Importance of Understanding the Business
+
+ Another major lesson from this lecture is that transformation cannot be designed purely from the technical side.
+
+ I need to understand what the downstream user actually needs.
+
+ For example, a portfolio manager may ask:
+
+ > "I need portfolio performance."
+
+ That statement is not yet a technical requirement.
+
+ I need to clarify:
+
+ - What does performance mean?
+- Absolute return or relative return?
+- Which benchmark?
+- Which time period?
+- Gross or net of fees?
+- How should cash be treated?
+- How should corporate actions be handled?
+- How should currency conversion be performed?
+
+ Only after understanding these questions can I design the correct transformations.
+
+ This connects directly to the principle from the first lecture:
+
+```
+Business Need
+      ↓
+Requirements
+      ↓
+Data Requirements
+      ↓
+Transformation Logic
+      ↓
+Useful Dataset
+```
+
+---
+
+ # Transformation Is Where Business Logic Enters the Data
+
+ This is perhaps the most important concept I take from this lecture.
+
+ Raw data represents what happened.
+
+ Transformation applies the organization's interpretation of what that data means.
+
+ For example:
+
+```
+Raw Transactions
+      ↓
+Business Rules
+      ↓
+Positions
+      ↓
+Portfolio Value
+      ↓
+Portfolio Return
+```
+
+ Therefore, transformation is not merely technical data manipulation.
+
+ It is also the implementation of **business logic**.
+
+---
+
+ # My Financial Engineering Mental Model
+
+ I now think about transformation as the layer that converts:
+
+```
+"What happened?"
+```
+
+ into:
+
+```
+"What does it mean?"
+```
+
+ For example:
+
+```
+Raw Trade
+    ↓
+Trade Classification
+    ↓
+Position Update
+    ↓
+Portfolio Exposure
+    ↓
+Risk Metrics
+```
+
+ Or:
+
+```
+Raw Price
+    ↓
+Clean Price
+    ↓
+Return
+    ↓
+Rolling Return
+    ↓
+Momentum Feature
+    ↓
+Model Input
+```
+
+ This is where raw financial data becomes information that can actually support decisions and models.
+
+---
+
+ # Queries, Modeling, and Transformation — Together
+
+ These three components should not be thought of independently.
+
+```
+             Data
+              │
+              ↓
+           Queries
+              │
+              ↓
+       Retrieve Required Data
+              │
+              ↓
+       Data Modeling
+              │
+              ↓
+      Organize the Data
+              │
+              ↓
+        Transformation
+              │
+              ↓
+        Improve / Enrich
+              │
+              ↓
+       Useful Dataset
+```
+
+ Together, they create the foundation for downstream analytics and machine learning.
+
+---
+
+ # What I Want to Remember
+
+ The key ideas from this lecture are:
+
+ - Transformation is where data engineering begins to create significant value for downstream users.
+- Raw data is not automatically useful data.
+- SQL is one of the most important tools for querying data.
+- Queries can affect performance, cost, and reliability.
+- Poor joins can cause **row explosion** and unexpectedly large datasets.
+- Data modeling defines how data represents real-world entities and relationships.
+- Good data models require understanding business definitions and stakeholder needs.
+- Normalized data is often useful for transactional systems.
+- Denormalized data can be useful for analytical workloads.
+- Data transformation includes cleaning, standardization, enrichment, aggregation, and restructuring.
+- Transformation can happen at multiple points throughout the data engineering lifecycle.
+- Financial data often requires domain-specific transformations.
+- Feature engineering is a specialized form of transformation focused on producing useful model inputs.
+- Data transformation is closely connected to data quality.
+- Good transformation pipelines should be reproducible, testable, and understandable.
+- Data lineage helps trace model inputs back to their original sources.
+- Transformation is where much of the organization's business logic gets implemented into the data platform.
+
+---
+
+ # Connecting Everything Learned So Far
+
+ The lifecycle is now becoming much more concrete:
+
+```
+1. Data Generation
+        ↓
+2. Source Systems
+        ↓
+3. Data Ingestion
+        ↓
+4. Data Storage
+        ↓
+5. Queries
+        ↓
+6. Data Modeling
+        ↓
+7. Data Transformation
+        ↓
+8. Curated Data
+        ↓
+9. Analytics / ML / Financial Models
+```
+
+ And from my financial modelling perspective:
+
+```
+Market / Financial Sources
+          ↓
+       Ingestion
+          ↓
+     Raw Storage
+          ↓
+     Data Cleaning
+          ↓
+    Data Standardization
+          ↓
+      Data Modeling
+          ↓
+     Feature Engineering
+          ↓
+   Model-Ready Dataset
+          ↓
+   Financial Model
+          ↓
+Prediction / Valuation / Risk / Portfolio Analytics
+```
+
+ The key lesson I want to carry forward is:
+
+ > **A data engineer does not simply move data from one system to another. The goal is to transform raw data into reliable, meaningful, and accessible information that downstream users can actually use.**
+
+ For financial modelling, this means the data engineering pipeline ultimately becomes the foundation on which the quality of the financial model depends.
+
+---
+
+ # Looking Ahead
+
+ So far, the lifecycle has covered:
+
+```
+Generate
+   ↓
+Ingest
+   ↓
+Store
+   ↓
+Transform
+```
+
+ The next question is:
+
+ > **Once we have transformed data, how do we make it available to the people, applications, analytics systems, and models that need it?**
+
+ This leads to the next stage of the data engineering lifecycle:
+
+ **Serving Data for Downstream Use Cases.**
