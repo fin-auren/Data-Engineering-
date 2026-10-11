@@ -15380,3 +15380,439 @@ Build Reliable Data Systems
 Deliver Trustworthy Financial Analytics
 ```
 
+
+## Software Engineering: Writing Production-Grade Data Systems
+
+Throughout the previous lectures, we explored several concepts that influence how data systems are designed and operated, including security, data management, data architecture, DataOps, and orchestration.
+
+Software engineering connects these concepts by focusing on how we write, test, deploy, and maintain the code that powers data systems.
+
+The instructor emphasizes an important distinction: being able to write code that works is not the same as being able to write production-grade code.
+
+A script might successfully retrieve market prices or calculate portfolio returns, but a reliable data system requires code that is also readable, testable, maintainable, and deployable.
+
+> **The goal is not simply to write code that works today, but to build software that can be understood, tested, maintained, and trusted over time.**
+
+This distinction is particularly relevant to financial modelling, where calculations must be reproducible, data transformations must be consistent, and changes to analytical logic should not silently introduce errors.
+
+---
+
+## Understanding Software Engineering
+
+Software engineering is the discipline of designing, developing, deploying, and maintaining software applications.
+
+Historically, many data-processing responsibilities were handled by software engineers as part of their broader work. As the volume, diversity, and business importance of data increased, these responsibilities became more specialized and eventually developed into the field of data engineering.
+
+Today, data engineers have access to managed services, open-source frameworks, and cloud platforms that simplify many infrastructure and data-processing tasks.
+
+This allows engineers to spend more time solving business problems instead of building every component from scratch.
+
+However, access to these tools does not eliminate the need for strong programming skills.
+
+### Moving up the value chain
+
+Modern data engineers can use existing tools to handle tasks that previously required substantial custom development.
+
+For example, instead of building a complete distributed processing engine, an engineer can use an existing framework such as Apache Spark.
+
+Instead of manually coordinating every pipeline task, an engineer can use an orchestration framework such as Apache Airflow.
+
+Instead of implementing database operations from scratch, an engineer can use SQL and managed database services.
+
+This changes the nature of the work:
+
+```
+Build Everything from Scratch
+              ↓
+      Use Existing Tools
+              ↓
+    Focus on Business Logic
+              ↓
+   Improve Reliability & Quality
+              ↓
+       Deliver More Value
+```
+
+The key lesson is that tools help us work more efficiently, but we still need to understand how to use them correctly and how to write high-quality code around them.
+
+---
+
+## Why Coding Remains Essential for Data Engineers
+
+The lecture identifies coding as a fundamental skill throughout the data engineering lifecycle.
+
+Data engineers work with code across several stages:
+
+- **Ingestion:** Retrieving data from APIs, databases, files, and other sources.
+- **Transformation:** Cleaning, validating, joining, and restructuring datasets.
+- **Storage:** Loading data into databases, warehouses, and data lakes.
+- **Serving:** Preparing data for analytics, machine learning, and applications.
+- **Orchestration:** Defining workflows and coordinating the execution of tasks.
+- **Infrastructure:** Automating the deployment and configuration of data systems.
+
+Even when managed services handle much of the underlying infrastructure, engineers still need to configure those services, implement business logic, validate results, and troubleshoot problems.
+
+### Languages and technologies introduced in the lecture
+
+| Language or Technology | Typical Role in Data Engineering |
+| --- | --- |
+| SQL | Querying, joining, aggregating, and transforming structured data |
+| Python | Data processing, automation, API integration, and analytical logic |
+| Bash | Command-line operations and scripting |
+| Apache Spark | Distributed data processing |
+| Apache Kafka | Event streaming and real-time data pipelines |
+| Java / Scala | Application development and distributed data processing |
+| R | Statistical computing and analytics |
+| Go / Rust | Systems programming and infrastructure-related applications |
+
+The course focuses primarily on **SQL, Python, and Bash** in its practical exercises.
+
+I want to prioritize these foundational skills before expanding into additional languages and frameworks.
+
+The broader lesson is that strong programming fundamentals make it easier to learn new technologies when a project requires them.
+
+---
+
+## What Does Production-Grade Code Mean?
+
+One of the most important ideas in this lecture is the difference between code that works in a single situation and code that is suitable for a production environment.
+
+Consider a simple Python script that downloads stock prices and calculates daily returns.
+
+The script might work correctly when executed manually on a small dataset. However, problems may emerge when the source API becomes unavailable, a stock has missing prices, or the script needs to process several years of data.
+
+Production-grade code should be designed to handle these situations appropriately.
+
+The lecture emphasizes four important qualities.
+
+### 1\. Clean code
+
+Clean code is organized logically and avoids unnecessary complexity.
+
+Functions should have clear responsibilities, variable names should communicate their purpose, and repeated logic should be reduced where appropriate.
+
+For example, a function called `calculate_daily_returns()` is easier to understand than a generic function called `process_data()` when the task is specifically to calculate returns.
+
+### 2\. Readable code
+
+Readable code allows another person, or the same engineer several months later, to understand how the system works.
+
+This involves meaningful naming, consistent formatting, clear structure, and documentation where necessary.
+
+Readability is particularly important in financial modelling because the implementation of a calculation should be understandable enough to review against its intended financial definition.
+
+### 3\. Testable code
+
+Testable code is structured so that its behaviour can be verified independently.
+
+For example, a return-calculation function can be tested using a small dataset with known prices and expected results.
+
+Testing helps detect errors before they affect downstream pipelines or reports.
+
+### 4\. Deployable code
+
+Deployable code can be incorporated into a controlled environment and executed consistently.
+
+This requires more than writing the main calculation. Depending on the project, it may also involve configuration management, dependency management, automated tests, logging, deployment procedures, and environment-specific settings.
+
+Together, these qualities help transform a prototype into a maintainable data system.
+
+```
+          Production-Grade Code
+                    |
+        +-----------+-----------+
+        |           |           |
+        v           v           v
+      Clean      Readable    Testable
+                    |
+                    v
+                Deployable
+                    |
+                    v
+          Maintainable Systems
+```
+
+These characteristics overlap and reinforce one another. They should be treated as ongoing engineering goals rather than separate boxes that can be checked only once.
+
+---
+
+## My Perspective: Applying Software Engineering to Financial Modelling
+
+Financial modelling often begins with exploratory analysis in notebooks or standalone scripts.
+
+For example, I might download historical prices, calculate returns, construct a portfolio, and evaluate its performance.
+
+This is a useful way to explore an idea. However, the implementation can become difficult to maintain when I introduce additional instruments, benchmarks, risk metrics, and reporting requirements.
+
+The next step is to separate the analytical logic into reusable components.
+
+### Example — From a Financial Script to a Reusable System
+
+A basic financial modelling workflow might look like this:
+
+```
+Retrieve Market Data
+         ↓
+Clean & Validate Data
+         ↓
+Calculate Returns
+         ↓
+Construct Portfolio
+         ↓
+Calculate Performance
+         ↓
+Calculate Risk Metrics
+         ↓
+Generate Reports
+```
+
+Instead of implementing every stage in one large script, I can organize the logic into independent functions and modules.
+
+For example:
+
+```
+def calculate_daily_returns(prices):
+    return prices.pct_change()
+
+def calculate_portfolio_returns(asset_returns, weights):
+    return asset_returns.mul(weights, axis=1).sum(axis=1)
+```
+
+These functions illustrate how individual calculations can be separated into reusable components.
+
+The portfolio-return function assumes that the asset returns and weights are aligned correctly and that the weighting convention is appropriate for the model. Those assumptions should be validated in a real implementation.
+
+The advantage of this structure is that each component can be tested, reviewed, and modified independently.
+
+### Step 1 — Separate data processing from financial logic
+
+I would distinguish between retrieving market data, validating it, calculating financial metrics, and generating reports.
+
+This separation makes it easier to identify where an error originates.
+
+### Step 2 — Make calculations reusable
+
+Rather than copying the same return-calculation logic into multiple notebooks, I would implement it once in a reusable function or module.
+
+This reduces duplication and makes it easier to maintain consistency across projects.
+
+### Step 3 — Add tests
+
+I would verify that the functions produce expected results for known inputs and behave appropriately when they encounter invalid or missing data.
+
+### Step 4 — Add operational safeguards
+
+I would introduce logging, exception handling, input validation, and configuration management where appropriate.
+
+This helps make the system more predictable when it interacts with external data sources and automated workflows.
+
+### Step 5 — Integrate the components
+
+Finally, I would connect the functions into a repeatable pipeline and, when necessary, use an orchestration framework to manage its execution.
+
+The objective is to preserve the correctness of the financial logic while making the surrounding system easier to maintain and operate.
+
+---
+
+## Testing: An Essential Skill for Financial Data Systems
+
+Although this lecture does not explore testing in detail, its emphasis on testable code suggests an important practical direction for my learning.
+
+Financial calculations should not be trusted simply because a script executes without errors.
+
+A program can run successfully and still produce incorrect results because of a formula error, misaligned dates, missing observations, or incorrect assumptions.
+
+For example, simple daily returns are calculated as:
+
+$$
+R_t=\frac{P_t}{P_{t-1}}-1
+$$
+
+Suppose the previous closing price is 100 and the current closing price is 105.
+
+The expected simple return is:
+
+$$
+R_t=\frac{105}{100}-1=0.05=5\%
+$$
+
+A unit test can verify that the implementation produces this result.
+
+Other useful tests for financial modelling include:
+
+- Checking that returns match known examples.
+- Verifying that date indexes are correctly aligned.
+- Detecting duplicate instrument-date observations.
+- Ensuring portfolio weights satisfy the intended constraints.
+- Testing the handling of missing prices and zero denominators.
+- Checking that changes to one function do not break other calculations.
+
+The correct tests depend on the financial model and its assumptions.
+
+For example, a portfolio with cash holdings or short positions may legitimately have weights that do not follow the constraints of a fully invested long-only portfolio.
+
+**Testing should verify the model's intended behaviour, not impose assumptions that are inappropriate for the model.**
+
+---
+
+## Software Engineering and the Other Data Engineering Undercurrents
+
+Software engineering connects directly with the concepts introduced in the previous lectures.
+
+### 1\. Security
+
+Code must handle credentials and sensitive information responsibly.
+
+For example, API keys should not be embedded directly in source code or committed to a public repository.
+
+Access permissions, configuration, and secret management should be designed with the system's security requirements in mind.
+
+### 2\. Data management
+
+Software should help maintain data quality, consistency, and integrity.
+
+This includes implementing validation rules, documenting data definitions, and handling changes to schemas and source systems.
+
+### 3\. Data architecture
+
+Code implements the design decisions made when building a data system.
+
+Well-structured modules and clear interfaces make it easier to evolve individual components without unnecessarily changing the entire system.
+
+### 4\. DataOps
+
+Software engineering supports automation, testing, continuous integration, and controlled deployment.
+
+These practices reduce the risks associated with changing data-processing logic.
+
+### 5\. Orchestration
+
+Orchestration frameworks coordinate the execution of software components.
+
+For example, Python functions and SQL transformations can be organized into tasks with explicit dependencies.
+
+The relationship can be summarized as follows:
+
+```
+Software Engineering
+        |
+        +── Security Controls
+        |
+        +── Data Quality Logic
+        |
+        +── Architecture Implementation
+        |
+        +── Automated Testing & Deployment
+        |
+        +── Orchestrated Workflows
+        |
+        v
+ Reliable Data Engineering Systems
+```
+
+Software engineering is therefore not an isolated programming topic. It supports the implementation and maintenance of nearly every other aspect of the data engineering lifecycle.
+
+---
+
+## Open-Source Contributions and Infrastructure as Code
+
+The instructor also introduces two additional areas where data engineers apply software engineering skills.
+
+### Open-source development
+
+Data engineers often use existing open-source frameworks to solve practical problems.
+
+During implementation, they may discover a limitation or develop an improvement that could benefit other users.
+
+Contributing a fix or enhancement to an open-source project requires code that is understandable, testable, and consistent with the project's development practices.
+
+Even if I do not immediately contribute to public projects, learning how to work with existing codebases is valuable because data engineering frequently involves integrating and extending existing tools.
+
+### Infrastructure as Code and Pipeline as Code
+
+Infrastructure as Code (IaC) means managing infrastructure through version-controlled, machine-readable definitions rather than relying entirely on manual configuration.
+
+Pipeline as Code applies a similar idea to data workflows, where pipeline definitions and execution logic are maintained as code.
+
+These approaches make infrastructure and pipeline configurations easier to review, reproduce, test, and deploy.
+
+For example, a cloud-based financial data pipeline might require:
+
+- Storage resources.
+- Access permissions.
+- Data-processing services.
+- Workflow definitions.
+- Monitoring and alerting configurations.
+
+Managing appropriate parts of this setup as code can reduce configuration inconsistencies and make the system easier to recreate.
+
+These practices also connect directly to the previous lectures on DataOps, architecture, and orchestration.
+
+---
+
+## My Learning Priorities
+
+Based on this lecture, I want to build a strong foundation in software engineering before moving toward increasingly complex data infrastructure.
+
+My initial priorities are:
+
+1. **Python fundamentals:** Functions, modules, data structures, exceptions, and reusable code.
+2. **SQL:** Querying, joining, aggregating, and transforming structured data.
+3. **Bash and the command line:** Running scripts, navigating environments, and automating routine tasks.
+4. **Testing:** Writing unit tests and validating financial calculations.
+5. **Version control:** Using Git and GitHub to track changes and maintain a clear development history.
+6. **Code organization:** Separating data ingestion, transformations, financial calculations, and reporting.
+7. **Logging and error handling:** Making problems visible and easier to investigate.
+8. **Automation and deployment:** Gradually integrating the code into repeatable workflows.
+
+I do not need to master every framework or programming language immediately.
+
+The more useful objective is to build transferable skills that will help me understand and maintain increasingly complex systems.
+
+---
+
+## Key Takeaways
+
+This lecture completes the discussion of the undercurrents of the data engineering lifecycle.
+
+The main lessons I want to retain are:
+
+1. **Software engineering is fundamental to data engineering.** Writing and reading code are everyday responsibilities.
+2. **Working code is not necessarily production-grade code.** Readability, testability, maintainability, and deployability also matter.
+3. **Modern tools reduce infrastructure work but do not eliminate the need for coding skills.** Engineers still need to implement business logic and ensure that systems behave correctly.
+4. **Strong fundamentals make learning new languages easier.** SQL, Python, and Bash are useful starting points for this course.
+5. **Financial calculations should be independently testable.** Successful execution does not guarantee mathematical or financial correctness.
+6. **Reusable components improve maintainability.** Separating ingestion, validation, calculations, and reporting makes systems easier to understand and modify.
+7. **Software engineering supports the other undercurrents.** Security, architecture, DataOps, and orchestration all depend on well-designed and maintainable implementations.
+
+The most important lesson I take from this lecture is that **I want to approach financial modelling as both a quantitative discipline and a software engineering discipline**.
+
+Understanding financial theory helps me determine what should be calculated. Software engineering helps me implement those calculations in a way that is reproducible, testable, and maintainable.
+
+Combining these skills is essential as I move from individual analytical experiments toward automated financial data systems.
+
+---
+
+## Looking Ahead — Bringing the Lifecycle to the Cloud
+
+The lecture concludes the discussion of the undercurrents of the data engineering lifecycle and introduces the next stage of the course: applying these concepts in practical exercises on AWS.
+
+This represents a transition from understanding the principles behind data engineering to seeing how those principles operate in a real cloud environment.
+
+The concepts covered so far provide a foundation for these exercises:
+
+```
+Business Requirements
+        ↓
+Data Architecture
+        ↓
+Data Management & Security
+        ↓
+DataOps & Orchestration
+        ↓
+Software Engineering
+        ↓
+Cloud-Based Data Pipelines
+        ↓
+Reliable Analytics & Financial Models
+```
