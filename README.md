@@ -13552,23 +13552,6 @@ This suggests that secure data engineering is not separate from quantitative res
 
 ---
 
-## A Security Checklist for My Financial Data Projects
-
-As I continue applying data engineering concepts to financial modelling, I want to use the following questions when designing a pipeline or working with a new dataset.
-
-- [ ]**Purpose:** Do I have a clear reason for collecting each dataset?
-- [ ]**Data minimization:** Can I exclude unnecessary sensitive information?
-- [ ]**Least privilege:** Does each user or service have only the permissions it needs?
-- [ ]**Credentials:** Are API keys, passwords, and other secrets kept out of source code and GitHub?
-- [ ]**Storage:** Is sensitive data protected by appropriate access controls and encryption?
-- [ ]**Networking:** Are databases, servers, and storage resources exposed only where necessary?
-- [ ]**Data integrity:** Can unauthorized or accidental modifications be detected?
-- [ ]**Environment separation:** Are development and production permissions appropriately separated?
-- [ ]**Monitoring:** Can unusual access or configuration changes be identified?
-- [ ]**Retention:** Is data retained only as long as required by its purpose and applicable obligations?
-- [ ]**Recovery:** Are important datasets and configurations recoverable after failures or security incidents?
-
-This checklist is a starting point rather than a complete security standard. Actual controls should reflect the sensitivity of the data, the deployment environment, and any applicable regulatory or contractual requirements.
 
 For my GitHub-based learning projects, I also want to maintain a clear distinction between source code and sensitive data. Example datasets, synthetic financial records, and environment-variable templates can be used to demonstrate the architecture without exposing real credentials or confidential information.
 
