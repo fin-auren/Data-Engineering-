@@ -13107,3 +13107,513 @@ Business / Investment Question
  The goal is therefore not just to **build a financial model**.
 
  It is to build the **data engineering system that can reliably feed, maintain, validate, and support financial models**.
+## Security as a Core Principle of Data Engineering
+
+Data engineering is not just about collecting, transforming, storing, and serving data. It is also about ensuring that the data remains secure throughout its lifecycle.
+
+Organizations often work with sensitive information, including personal customer data, financial records, proprietary business information, and confidential operational data. When a data engineer builds pipelines and infrastructure to process this information, they also become responsible for helping protect it.
+
+The central lesson from this lecture is:
+
+> **Security should not be treated as an additional feature added after building a data system. It should be a fundamental consideration throughout the design, implementation, and operation of that system.**
+
+This becomes particularly important in financial modelling, where data may include portfolio holdings, transaction histories, client information, trading strategies, financial statements, and proprietary model assumptions.
+
+---
+
+## The Data Engineer's Responsibility for Security
+
+A data engineer is entrusted with building systems that allow data to move between different sources, storage systems, applications, and users.
+
+Every connection between these components introduces potential security considerations.
+
+A simplified view is:
+
+```
+Data Sources
+     ↓
+Data Ingestion
+     ↓
+Data Transformation
+     ↓
+Data Storage
+     ↓
+Data Access & Delivery
+     ↓
+Analytics / ML / Financial Models
+```
+
+At every stage, we need to consider:
+
+- Who can access the data?
+- What information are they allowed to see?
+- Which system resources can they use?
+- How is sensitive information protected?
+- What happens if credentials are compromised?
+- Could data accidentally become publicly accessible?
+- How can we prevent unauthorized access or data leakage?
+
+The responsibility of a data engineer therefore extends beyond making a pipeline work correctly.
+
+A pipeline may successfully ingest, transform, and deliver data while still being fundamentally insecure.
+
+For example, a financial data pipeline might calculate portfolio returns accurately but store its output in a database that allows unauthorized users to access client-level information.
+
+From a technical perspective, the pipeline works. From a business and security perspective, the system has failed.
+
+This distinction reinforces an important principle:
+
+> **A reliable data system must protect not only the accuracy and availability of data, but also its confidentiality.**
+
+---
+
+## Principle 1 — The Principle of Least Privilege
+
+One of the key security concepts introduced in this lecture is the **principle of least privilege**.
+
+The principle states that users, applications, and systems should receive only the permissions necessary to perform their responsibilities, and only for as long as those permissions are required.
+
+In other words, access should be limited by both **scope and duration**.
+
+For example, a data analyst who needs to calculate portfolio performance may require access to historical prices, portfolio weights, and transaction records. They may not need permission to modify production databases, administer cloud infrastructure, or access unrelated client information.
+
+A simplified view is:
+
+```
+User / Application
+        ↓
+  Required Task
+        ↓
+ Identify Necessary Access
+        ↓
+ Grant Minimum Permissions
+        ↓
+ Review / Revoke When Needed
+```
+
+### Why excessive permissions are dangerous
+
+Suppose every employee in a financial analytics team has administrator access to the production data platform.
+
+This creates unnecessary risk.
+
+- An accidental command could delete important data.
+- A compromised account could expose the entire database.
+- An application vulnerability could be exploited to access unrelated resources.
+- A user could modify data outside their responsibilities.
+- A temporary permission could remain active long after it is needed.
+
+The principle of least privilege reduces the potential impact of these situations.
+
+The lecture also emphasizes that this principle applies to the data engineer personally.
+
+For example, having administrator permissions available does not mean they should be used for every task. Routine development and data processing should use appropriately restricted accounts wherever possible.
+
+### Applying least privilege to financial modelling
+
+Imagine that I am building a portfolio analytics platform.
+
+Different users might require different permissions:
+
+| User / System | Required Access |
+| --- | --- |
+| Market-data ingestion pipeline | Write access to the designated market-data tables |
+| Financial analyst | Read access to approved historical market data |
+| Portfolio manager | Access to authorized portfolio analytics and performance reports |
+| Risk model | Read access to the specific portfolio and market inputs required for calculations |
+| Data engineer | Limited development access, with separately controlled production privileges |
+| Platform administrator | Elevated permissions for infrastructure administration when required |
+
+These permissions should be designed around actual responsibilities rather than convenience.
+
+The key idea is that **access should be granted because a task requires it, not simply because granting access is easier**.
+
+---
+
+## Principle 2 — Minimize the Sensitive Data You Collect
+
+Another important lesson is that security begins before data enters the system.
+
+The lecture makes a particularly useful point: one of the best ways to protect sensitive data is to avoid collecting it when it is not necessary.
+
+If sensitive information is never ingested or stored, it cannot be exposed through a breach of that particular system.
+
+This introduces the concept of **data minimization**.
+
+The process can be represented as:
+
+```
+Business Requirement
+        ↓
+Identify Required Data
+        ↓
+Determine What Is Necessary
+        ↓
+Exclude Unnecessary Sensitive Data
+        ↓
+Ingest and Store Only What Is Needed
+```
+
+For example, suppose a financial model only needs daily security prices, portfolio weights, and benchmark returns to calculate historical portfolio performance.
+
+There may be no reason to ingest client names, personal addresses, account identifiers, or other personally identifiable information into the modelling environment.
+
+Instead, the model could operate using internal portfolio identifiers or appropriately pseudonymized records.
+
+This reduces the amount of sensitive information exposed to the system.
+
+### Why this matters
+
+Collecting unnecessary sensitive data creates additional responsibilities:
+
+- Access controls must protect it.
+- Storage systems must be secured.
+- Retention and deletion policies must be applied.
+- Data transfers introduce additional exposure.
+- Monitoring and auditing become more complicated.
+- A potential breach may affect more information.
+
+This leads to an important design principle:
+
+> **Before deciding how to secure a piece of data, first ask whether the system needs that data at all.**
+
+For financial modelling, this is particularly useful when separating the data required for quantitative calculations from the personal or commercially sensitive information associated with the underlying business.
+
+---
+
+## Principle 3 — Security in Cloud-Based Data Systems
+
+Modern data engineering frequently relies on cloud infrastructure.
+
+Cloud platforms make it possible to build scalable pipelines, store large datasets, and deliver data to applications and analytics systems. However, they also introduce additional security considerations.
+
+The lecture specifically highlights three important areas:
+
+- Identity and Access Management (IAM)
+- Encryption
+- Networking protocols and configuration
+
+### Identity and Access Management (IAM)
+
+IAM determines which users, applications, and services can access particular resources and what actions they can perform.
+
+For example, an AWS-based financial data platform might use IAM policies to control which services can read market data, write transformed datasets, or access production storage.
+
+The goal is to enforce least privilege through explicit and appropriately scoped permissions.
+
+### Encryption
+
+Encryption helps protect data from unauthorized disclosure.
+
+Two important situations are:
+
+- **Encryption at rest:** Protecting data stored in databases, data warehouses, object storage, or backup systems.
+- **Encryption in transit:** Protecting data as it moves between systems, typically using secure communication protocols such as TLS.
+
+For example, historical market data transferred from an external provider to a cloud-based data platform should be protected during transmission. Sensitive datasets stored in the platform should also be protected through appropriate storage encryption and access controls.
+
+Encryption is important, but it does not replace authorization. An encrypted database can still be exposed if unauthorized users receive valid access credentials or excessive permissions.
+
+### Networking and exposure
+
+Cloud resources should be reachable only through the network paths required for their intended purpose.
+
+For example, a financial data warehouse used by internal analytics applications should not automatically be accessible from the public internet.
+
+A simplified secure architecture might look like this:
+
+```
+External Market-Data Provider
+             ↓
+       Secure Ingestion
+             ↓
+     Controlled Cloud Network
+             ↓
+       Protected Storage
+             ↓
+     Authorized Applications
+             ↓
+       Financial Analytics
+```
+
+The objective is to reduce unnecessary exposure while allowing legitimate data flows to operate.
+
+### A practical AWS example
+
+The lecture mentions cases where engineers unintentionally leave an AWS S3 bucket, server, or database publicly accessible.
+
+In a financial modelling environment, this could expose historical transactions, portfolio information, model outputs, or confidential research.
+
+Preventive measures include:
+
+- Blocking public access to S3 buckets unless explicitly justified.
+- Using appropriately scoped IAM roles and policies.
+- Avoiding hard-coded credentials in source code.
+- Restricting network access to authorized systems.
+- Encrypting sensitive data at rest and in transit.
+- Auditing permissions and monitoring suspicious activity.
+- Separating development, testing, and production environments.
+
+These controls should be implemented deliberately rather than relying on the assumption that cloud infrastructure is secure by default.
+
+---
+
+## Security Is Also About People
+
+An important aspect of this lecture is that security is not purely a technical problem.
+
+Even a well-designed architecture can be compromised by human mistakes or irresponsible behaviour.
+
+The lecturer highlights examples such as:
+
+- Sharing passwords insecurely.
+- Falling victim to phishing attacks.
+- Revealing confidential information to unauthorized individuals.
+- Misconfiguring cloud resources.
+- Forgetting to apply basic security practices.
+- Using privileged accounts unnecessarily.
+
+A phishing attack, for example, may involve an attacker impersonating a trusted person or organization to persuade an employee to reveal credentials.
+
+If those credentials provide access to a production data platform, a single mistake can create consequences far beyond the individual account.
+
+This is why security must become part of the working habits of everyone involved in a data system.
+
+### Developing a defensive mindset
+
+The lecture encourages data engineers to anticipate how systems could fail or be attacked.
+
+Instead of asking only:
+
+> "How do I make this pipeline work?"
+
+We should also ask:
+
+> "How could this pipeline expose data, and what would happen if someone gained unauthorized access?"
+
+For a financial modelling pipeline, this might involve considering:
+
+- What happens if an API key is leaked?
+- What happens if an object-storage bucket becomes public?
+- What happens if an analyst accidentally overwrites production data?
+- What happens if a third-party data provider sends malicious or unexpected input?
+- What happens if a compromised application accesses data outside its intended scope?
+- What happens if confidential model outputs are shared with the wrong users?
+
+Thinking through these scenarios helps identify weaknesses before they become incidents.
+
+Security therefore involves both preventive controls and the ability to detect, investigate, and respond to problems.
+
+---
+
+## Security Theater vs. a Genuine Security Culture
+
+One of the most interesting concepts introduced in this lecture is **security theater**.
+
+Security theater occurs when an organization appears secure because it follows checklists, documents policies, or demonstrates compliance, but its everyday practices do not meaningfully protect its systems and data.
+
+For example, an organization might require employees to complete annual security training while still allowing:
+
+- Excessive administrator permissions.
+- Shared credentials.
+- Publicly accessible storage containing sensitive data.
+- Unreviewed access to production systems.
+- Weak monitoring of critical data infrastructure.
+
+In such an environment, security exists in documentation but not necessarily in operational practice.
+
+The distinction can be represented as:
+
+```
+Security Theater
+       ↓
+Policies + Checklists + Compliance
+       ↓
+Limited Practical Protection
+```
+
+Compared with:
+
+```
+Genuine Security Culture
+       ↓
+Policies + Technical Controls + Awareness
+       ↓
+Consistent Secure Behaviour
+       ↓
+Reduced Security Risk
+```
+
+Compliance requirements remain important, particularly in financial services. However, compliance alone should not be treated as proof that a system is secure.
+
+A genuine security culture requires individuals and teams to understand their responsibilities, recognize vulnerabilities, and consistently apply appropriate controls.
+
+Security must be supported by both technology and organizational behaviour.
+
+---
+
+## My Perspective: Applying Security to Financial Modelling
+
+Financial modelling often involves bringing together market data, company financials, portfolio information, transaction records, economic indicators, and proprietary assumptions.
+
+Although not every financial dataset is confidential, many financial systems contain information that must be protected against unauthorized access, modification, or disclosure.
+
+This means that security should be considered alongside data quality, performance, reproducibility, and model accuracy.
+
+### Example — Building a Portfolio Analytics Pipeline
+
+Imagine I am developing a system that collects market data, calculates portfolio returns, and generates risk reports.
+
+The pipeline might look like this:
+
+```
+Market-Data APIs
+       ↓
+Data Ingestion
+       ↓
+Raw Market Data
+       ↓
+Data Validation & Transformation
+       ↓
+Portfolio / Risk Calculations
+       ↓
+Analytics Database
+       ↓
+Dashboards & Reports
+```
+
+At each stage, security introduces specific design questions.
+
+| Pipeline Stage | Security Consideration |
+| --- | --- |
+| Data ingestion | Protect API credentials and restrict which services can access external providers |
+| Raw storage | Restrict access and protect confidential or licensed datasets |
+| Data transformation | Prevent unauthorized modification and isolate execution permissions |
+| Model execution | Give models access only to the required inputs and outputs |
+| Analytics database | Enforce user-specific permissions and appropriate data visibility |
+| Reporting | Ensure reports are available only to authorized recipients |
+| Operations | Monitor access, review permissions, and investigate unusual activity |
+
+### Step 1 — Identify sensitive information
+
+Before building the pipeline, determine which data is public, commercially sensitive, personally identifiable, or subject to licensing and contractual restrictions.
+
+For example, publicly available historical stock prices have a different confidentiality profile from identifiable client holdings or proprietary investment strategies.
+
+### Step 2 — Minimize data collection
+
+Collect only the information needed for the intended calculations.
+
+If portfolio returns can be calculated using pseudonymous portfolio identifiers, there may be no need to expose client identities to the modelling environment.
+
+### Step 3 — Define access permissions
+
+Determine which users and services need to read, write, or administer each dataset.
+
+For example, a risk model may need permission to read portfolio holdings and market prices but should not automatically receive permission to modify the source data or administer the cloud platform.
+
+### Step 4 — Protect data and credentials
+
+Use appropriate encryption, secure credential management, controlled networking, and restricted storage access.
+
+Credentials should not be committed to a GitHub repository, even if the repository is private.
+
+### Step 5 — Monitor and review
+
+Security is not a one-time configuration task.
+
+Permissions can become excessive, infrastructure configurations can change, and new applications can introduce additional access paths.
+
+Regular reviews and monitoring help ensure that security controls remain effective as the system evolves.
+
+The broader lesson is that **a financial model should not be considered production-ready simply because its calculations are correct**. Its surrounding data infrastructure must also protect the information on which the model depends.
+
+---
+
+## Security, Data Quality, and Model Reliability
+
+Security is closely related to other important properties of a data system.
+
+For financial modelling, I find it useful to distinguish between three dimensions:
+
+| Dimension | Core Question | Financial Modelling Example |
+| --- | --- | --- |
+| Data quality | Is the data accurate and fit for purpose? | Are prices, dates, and corporate actions correct? |
+| Security | Is the data protected from unauthorized access or modification? | Can only authorized users access confidential portfolio data? |
+| Reliability | Does the system operate consistently as expected? | Can the pipeline recover from failures and produce reproducible outputs? |
+
+These dimensions are different, but they reinforce one another.
+
+For example, unauthorized modification of historical prices could compromise the integrity of a backtest. A model might execute successfully and produce plausible results while relying on data that has been maliciously altered.
+
+Similarly, a security breach could expose proprietary trading signals or investment strategies even if every numerical calculation is correct.
+
+This suggests that secure data engineering is not separate from quantitative research. It is part of creating trustworthy analytical systems.
+
+---
+
+## A Security Checklist for My Financial Data Projects
+
+As I continue applying data engineering concepts to financial modelling, I want to use the following questions when designing a pipeline or working with a new dataset.
+
+- [ ]**Purpose:** Do I have a clear reason for collecting each dataset?
+- [ ]**Data minimization:** Can I exclude unnecessary sensitive information?
+- [ ]**Least privilege:** Does each user or service have only the permissions it needs?
+- [ ]**Credentials:** Are API keys, passwords, and other secrets kept out of source code and GitHub?
+- [ ]**Storage:** Is sensitive data protected by appropriate access controls and encryption?
+- [ ]**Networking:** Are databases, servers, and storage resources exposed only where necessary?
+- [ ]**Data integrity:** Can unauthorized or accidental modifications be detected?
+- [ ]**Environment separation:** Are development and production permissions appropriately separated?
+- [ ]**Monitoring:** Can unusual access or configuration changes be identified?
+- [ ]**Retention:** Is data retained only as long as required by its purpose and applicable obligations?
+- [ ]**Recovery:** Are important datasets and configurations recoverable after failures or security incidents?
+
+This checklist is a starting point rather than a complete security standard. Actual controls should reflect the sensitivity of the data, the deployment environment, and any applicable regulatory or contractual requirements.
+
+For my GitHub-based learning projects, I also want to maintain a clear distinction between source code and sensitive data. Example datasets, synthetic financial records, and environment-variable templates can be used to demonstrate the architecture without exposing real credentials or confidential information.
+
+---
+
+## Key Takeaways
+
+This lecture reinforces several principles that I want to carry into future data engineering projects.
+
+1. **Security begins with system design.** It should not be postponed until after the pipeline has been implemented.
+2. **Apply the principle of least privilege.** Users, applications, and engineers should operate with only the access they require.
+3. **Minimize sensitive data.** Avoid collecting information that has no clear purpose in the system.
+4. **Understand cloud security fundamentals.** IAM, encryption, networking, and storage permissions are essential parts of cloud-based data engineering.
+5. **Adopt a defensive mindset.** Anticipate potential attacks, configuration errors, credential leaks, and accidental data exposure.
+6. **Build a genuine security culture.** Security depends on consistent behaviour across the organization, not just policies and compliance checklists.
+7. **Treat security as part of financial-model reliability.** Correct calculations are not enough if the underlying data or model outputs are exposed or compromised.
+
+The most important shift in my thinking is that a data engineer is not simply responsible for moving data from one place to another. The engineer also helps determine who can access that data, how it is protected, and how the organization can use it responsibly.
+
+For financial modelling, this means treating security as a foundational requirement alongside data quality, reproducibility, and analytical accuracy.
+
+---
+
+## Looking Ahead — Data Management
+
+The lecture concludes by introducing the next underlying concept in the data engineering lifecycle: **data management**.
+
+Security focuses on protecting data and controlling access. Data management takes a broader view of how data is governed, organized, maintained, documented, and made useful throughout its lifecycle.
+
+These concepts are closely connected.
+
+For example, managing a financial dataset involves more than storing historical prices in a database. It also involves understanding where the data came from, how it has been transformed, who owns it, how reliable it is, how long it should be retained, and who is authorized to use it.
+
+This creates a natural progression:
+
+```
+Business Requirements
+        ↓
+Data Architecture
+        ↓
+Data Collection & Processing
+        ↓
+Security & Access Control
+        ↓
+Data Management & Governance
+        ↓
+Trustworthy Financial Analytics
+```
